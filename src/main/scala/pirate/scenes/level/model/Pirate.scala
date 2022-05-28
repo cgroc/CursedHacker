@@ -72,7 +72,7 @@ object Pirate {
     // slides of the edges of platforms), by his standing height.
     // 32 = 1 so 15/32 x 28/32 is a bounding box of
     // (0.46875, 0.875)
-    val size = Vertex(15 / 32, 28 / 32)
+    val size = Vertex(5, 7.5)
 
     Pirate(
       BoundingBox(startPosition, size),
@@ -111,7 +111,12 @@ object Pirate {
 
   given CanEqual[Option[BoundingBox], Option[BoundingBox]] = CanEqual.derived
 
-  def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): (BoundingBox, Boolean) =
+  def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): (BoundingBox, Boolean) = {
+
+    import indigo.IndigoLogger._
+    consoleLog(
+      s"Checking collision with proposedBounds of h: ${proposedBounds.height}, w: ${proposedBounds.width}, p: ${proposedBounds.position}"
+    )
     platform.hitTest(proposedBounds) match {
       case Some(value) =>
         (
@@ -123,6 +128,7 @@ object Pirate {
       case None =>
         (proposedBounds, false)
     }
+  }
 
   val gravityIncrement: Double = 0.4d
 

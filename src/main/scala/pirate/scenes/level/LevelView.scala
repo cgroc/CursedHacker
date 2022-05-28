@@ -99,7 +99,8 @@ object LevelView {
     val respawnFlashSignal: Seconds => Signal[(Boolean, Boolean)] =
       lastRespawn => Signal(_ < lastRespawn + Seconds(1.2)) |*| Signal.Pulse(Seconds(0.1))
 
-    val captainWithAlpha: Sprite[Material.ImageEffects] => SignalFunction[(Boolean, Boolean), Sprite[Material.ImageEffects]] =
+    val captainWithAlpha
+        : Sprite[Material.ImageEffects] => SignalFunction[(Boolean, Boolean), Sprite[Material.ImageEffects]] =
       captain =>
         SignalFunction {
           case (false, _) =>
@@ -114,7 +115,11 @@ object LevelView {
               .modifyMaterial(_.withAlpha(0))
         }
 
-    def respawnEffect(gameTime: GameTime, lastRespawn: Seconds, captain: Sprite[Material.ImageEffects]): Sprite[Material.ImageEffects] =
+    def respawnEffect(
+        gameTime: GameTime,
+        lastRespawn: Seconds,
+        captain: Sprite[Material.ImageEffects]
+    ): Sprite[Material.ImageEffects] =
       (respawnFlashSignal(lastRespawn) |> captainWithAlpha(captain)).at(gameTime.running)
 
     def updatedCaptain(
@@ -123,62 +128,69 @@ object LevelView {
         captain: Sprite[Material.ImageEffects],
         toScreenSpace: Vertex => Point
     ): Sprite[Material.ImageEffects] =
-      pirate.state match {
-        case PirateState.Idle if pirateViewState.facingRight =>
-          captain
-            .moveTo(toScreenSpace(pirate.position))
-            .changeCycle(CycleLabel("Idle"))
-            .play()
+      captain
+        .moveTo(toScreenSpace(pirate.position))
+        .flipHorizontal(true)
+        .moveBy(-20, 0)
+        .changeCycle(CycleLabel("Idle"))
+        .play()
 
-        case PirateState.Idle =>
-          captain
-            .moveTo(toScreenSpace(pirate.position))
-            .flipHorizontal(true)
-            .moveBy(-20, 0)
-            .changeCycle(CycleLabel("Idle"))
-            .play()
-
-        case PirateState.MoveLeft =>
-          captain
-            .moveTo(toScreenSpace(pirate.position))
-            .flipHorizontal(true)
-            .moveBy(-20, 0)
-            .changeCycle(CycleLabel("Run"))
-            .play()
-
-        case PirateState.MoveRight =>
-          captain
-            .moveTo(toScreenSpace(pirate.position))
-            .changeCycle(CycleLabel("Run"))
-            .play()
-
-        case PirateState.FallingRight =>
-          captain
-            .moveTo(toScreenSpace(pirate.position))
-            .changeCycle(CycleLabel("Fall"))
-            .play()
-
-        case PirateState.FallingLeft =>
-          captain
-            .moveTo(toScreenSpace(pirate.position))
-            .flipHorizontal(true)
-            .moveBy(-20, 0)
-            .changeCycle(CycleLabel("Fall"))
-            .play()
-
-        case PirateState.JumpingRight =>
-          captain
-            .moveTo(toScreenSpace(pirate.position))
-            .changeCycle(CycleLabel("Jump"))
-            .play()
-
-        case PirateState.JumpingLeft =>
-          captain
-            .moveTo(toScreenSpace(pirate.position))
-            .flipHorizontal(true)
-            .moveBy(-20, 0)
-            .changeCycle(CycleLabel("Jump"))
-            .play()
-      }
+//      pirate.state match {
+//        case PirateState.Idle if pirateViewState.facingRight =>
+//          captain
+//            .moveTo(toScreenSpace(pirate.position))
+//            .changeCycle(CycleLabel("Idle"))
+//            .play()
+//
+//        case PirateState.Idle =>
+//          captain
+//            .moveTo(toScreenSpace(pirate.position))
+//            .flipHorizontal(true)
+//            .moveBy(-20, 0)
+//            .changeCycle(CycleLabel("Idle"))
+//            .play()
+//
+//        case PirateState.MoveLeft =>
+//          captain
+//            .moveTo(toScreenSpace(pirate.position))
+//            .flipHorizontal(true)
+//            .moveBy(-20, 0)
+//            .changeCycle(CycleLabel("Run"))
+//            .play()
+//
+//        case PirateState.MoveRight =>
+//          captain
+//            .moveTo(toScreenSpace(pirate.position))
+//            .changeCycle(CycleLabel("Run"))
+//            .play()
+//
+//        case PirateState.FallingRight =>
+//          captain
+//            .moveTo(toScreenSpace(pirate.position))
+//            .changeCycle(CycleLabel("Fall"))
+//            .play()
+//
+//        case PirateState.FallingLeft =>
+//          captain
+//            .moveTo(toScreenSpace(pirate.position))
+//            .flipHorizontal(true)
+//            .moveBy(-20, 0)
+//            .changeCycle(CycleLabel("Fall"))
+//            .play()
+//
+//        case PirateState.JumpingRight =>
+//          captain
+//            .moveTo(toScreenSpace(pirate.position))
+//            .changeCycle(CycleLabel("Jump"))
+//            .play()
+//
+//        case PirateState.JumpingLeft =>
+//          captain
+//            .moveTo(toScreenSpace(pirate.position))
+//            .flipHorizontal(true)
+//            .moveBy(-20, 0)
+//            .changeCycle(CycleLabel("Jump"))
+//            .play()
+//      }
   }
 }

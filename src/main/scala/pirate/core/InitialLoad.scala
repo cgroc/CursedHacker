@@ -141,8 +141,8 @@ object InitialLoad {
         StartupData(
           captain.sprite
             .modifyMaterial(m => Material.ImageEffects(m.diffuse))
-            .withRef(37, 64)
-            .moveTo(300, 271),
+            .withRef(79, 0)
+            .moveTo(300, 100),
           levelDataStore.map(_._1)
         )
       )
