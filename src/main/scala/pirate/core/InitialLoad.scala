@@ -59,7 +59,8 @@ object InitialLoad {
       assetCollection.findTextDataByName(Assets.Trees.jsonRef).isDefined &&
       assetCollection.findTextDataByName(Assets.Water.jsonRef).isDefined &&
       assetCollection.findTextDataByName(Assets.Flag.jsonRef).isDefined &&
-      assetCollection.findTextDataByName(Assets.Static.terrainJsonRef).isDefined
+      assetCollection.findTextDataByName(Assets.Static.terrainJsonRef).isDefined &&
+      assetCollection.findTextDataByName(Assets.Itv.jsonRef).isDefined
     ) {
 
       val tileMapper: Int => TileType = {
@@ -83,7 +84,18 @@ object InitialLoad {
         reflections <- loader(Assets.Water.jsonRef, Assets.Water.ref, Depth(20)).toOption
         flag        <- loader(Assets.Flag.jsonRef, Assets.Flag.ref, Depth(10)).toOption
         terrain     <- terrainData
-      } yield makeAdditionalAssets(screenDimensions, helm, palm, reflections, flag, terrain._1, terrain._2, terrain._3)
+        itv         <- loader(Assets.Itv.jsonRef, Assets.Itv.ref, Depth(5)).toOption
+      } yield makeAdditionalAssets(
+        screenDimensions,
+        helm,
+        palm,
+        reflections,
+        flag,
+        terrain._1,
+        terrain._2,
+        terrain._3,
+        itv
+      )
     } else None
   }
 
@@ -115,7 +127,8 @@ object InitialLoad {
       flag: SpriteAndAnimations,
       tileSize: Point,
       terrainMap: TiledGridMap[TileType],
-      terrain: Group
+      terrain: Group,
+      itv: SpriteAndAnimations
   ): (LevelDataStore, List[Animation]) =
     (
       LevelDataStore(
@@ -127,9 +140,10 @@ object InitialLoad {
         palm.sprite,
         tileSize,
         terrainMap,
-        terrain
+        terrain,
+        itv.sprite
       ),
-      List(waterReflections.animations, flag.animations, helm.animations, palm.animations)
+      List(waterReflections.animations, flag.animations, helm.animations, palm.animations, itv.animations)
     )
 
   def makeStartupData(
@@ -162,7 +176,8 @@ final case class LevelDataStore(
     palm: Sprite[Material.Bitmap],
     tileSize: Point,
     terrainMap: TiledGridMap[TileType],
-    terrain: Group
+    terrain: Group,
+    itv: Sprite[Material.Bitmap]
 ) {
   val backTallPalm: Sprite[Material.Bitmap] =
     palm

@@ -1,5 +1,6 @@
 package pirate.core
 
+import indigo.*
 import indigo._
 
 /*
@@ -137,6 +138,17 @@ object Assets {
       )
   }
 
+  object Itv {
+    val ref: AssetName     = AssetName("Itv")
+    val jsonRef: AssetName = AssetName("Itv JSON")
+
+    def assets(baseUrl: String): Set[AssetType] =
+      Set(
+        AssetType.Image(Itv.ref, AssetPath(baseUrl + "assets/" + Itv.ref + ".png")),
+        AssetType.Text(Itv.jsonRef, AssetPath(baseUrl + "assets/" + Itv.ref + ".json"))
+      )
+  }
+
   object Fonts {
     val smallFontName: AssetName            = AssetName("smallFontName")
     val fontKey: FontKey                    = FontKey("boxy font")
@@ -214,5 +226,6 @@ object Assets {
       Water.assets(baseUrl) ++
       Flag.assets(baseUrl) ++
       Trees.assets(baseUrl) ++
-      Helm.assets(baseUrl)
+      Helm.assets(baseUrl) ++
+      Itv.assets(baseUrl)
 }
