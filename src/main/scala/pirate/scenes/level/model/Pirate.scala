@@ -60,11 +60,11 @@ object Pirate {
   // Where does the captain start in model terms?
   // Right in the middle, and off the top of the screen
   // by 2 units (tiles).
-  val RespawnPoint = Vertex(9.5, -2)
+  val RespawnPoint = Vertex(0.0, 0.0)
 
   def initial: Pirate = {
 
-    val startPosition = Vertex(9.5, 6)
+    val startPosition = Vertex(0.0, 0.0)
 
     // The model space is 1 unit per tile, a tile is 32 x 32.
     // The captain does not take up a whole block. His bounding
@@ -72,7 +72,7 @@ object Pirate {
     // slides of the edges of platforms), by his standing height.
     // 32 = 1 so 15/32 x 28/32 is a bounding box of
     // (0.46875, 0.875)
-    val size = Vertex(5, 7.5)
+    val size = Vertex(0.46875, 0.875)
 
     Pirate(
       BoundingBox(startPosition, size),

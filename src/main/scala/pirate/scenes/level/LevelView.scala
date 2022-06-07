@@ -131,7 +131,6 @@ object LevelView {
       captain
         .moveTo(toScreenSpace(pirate.position))
         .flipHorizontal(true)
-        .moveBy(-20, 0)
         .changeCycle(CycleLabel("Idle"))
         .play()
 
