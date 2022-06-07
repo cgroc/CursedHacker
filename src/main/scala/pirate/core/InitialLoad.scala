@@ -129,6 +129,8 @@ object InitialLoad {
       List(waterReflections.animations, flag.animations, helm.animations, palm.animations)
     )
 
+  val foo                 = 224
+  def bar(i: Int): Double = 0.21
   def makeStartupData(
       captain: SpriteAndAnimations,
       levelDataStore: Option[(LevelDataStore, List[Animation])]
@@ -138,9 +140,9 @@ object InitialLoad {
         StartupData(
           captain.sprite
             .modifyMaterial(m => Material.ImageEffects(m.diffuse))
-            .withRef(0, 224)
-            .moveBy(224, 224)
-            .transformTo(Point(0, 0), Radians(0.0), Vector2(0.21, 0.21)),
+            .withRef(0, foo)
+            .moveBy(foo, foo)
+            .transformTo(Point(0, 0), Radians(0.0), Vector2(bar(foo), bar(foo))),
           levelDataStore.map(_._1)
         )
       )
