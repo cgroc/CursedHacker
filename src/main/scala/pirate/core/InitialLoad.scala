@@ -31,10 +31,7 @@ object InitialLoad {
     Outcome(
       loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
         .map { captain =>
-          makeStartupData(
-            captain,
-            levelDataStore(screenDimensions, assetCollection, dice)
-          )
+          makeStartupData(captain, levelDataStore(screenDimensions, assetCollection, dice))
         } match {
         case Left(message) =>
           Startup.Failure(message)
@@ -141,8 +138,9 @@ object InitialLoad {
         StartupData(
           captain.sprite
             .modifyMaterial(m => Material.ImageEffects(m.diffuse))
-            .withRef(79, 0)
-            .moveTo(300, 100),
+            .withRef(0, 224)
+            .moveBy(224, 224)
+            .transformTo(Point(0, 0), Radians(0.0), Vector2(0.21, 0.21)),
           levelDataStore.map(_._1)
         )
       )
