@@ -94,6 +94,7 @@ object LevelView {
               updatedCaptain(pirate, pirateViewState, captain, toScreenSpace)
             )
           )
+            .withCamera(Camera.LookAt(toScreenSpace(pirate.position + Vertex(5.0, 2.5)), Zoom.x2, Radians.zero))
         )
 
     val respawnFlashSignal: Seconds => Signal[(Boolean, Boolean)] =
