@@ -3,6 +3,7 @@ package pirate.core
 import indigo._
 import indigo.json.Json
 import indigo.shared.formats.TiledGridMap
+import pirate.core.MagicNumbers
 
 /*
 In a nutshell, the setup function here takes the boot data (screen dimensions),
@@ -64,15 +65,15 @@ object InitialLoad {
         case _ => TileType.Solid
       }
 
-      // Here we read the Tiled level description and manufacture a triple of:
-      // (the tile size, a `TiledGridMap` of data, and a renderable verison of the map)
-      val terrainData: Option[(Point, TiledGridMap[TileType], Group)] =
+      // Here we read the Tiled level description and manufacture a tuple of:
+      // (a `TiledGridMap` of data, and a renderable verison of the map)
+      val terrainData: Option[(TiledGridMap[TileType], Group)] =
         for {
           json         <- assetCollection.findTextDataByName(Assets.Static.terrainJsonRef)
           tileMap      <- Json.tiledMapFromJson(json)
           terrainGroup <- tileMap.toGroup(Assets.Static.terrainRef)
           grid         <- tileMap.toGrid(tileMapper)
-        } yield (Point(tileMap.tilewidth, tileMap.tileheight), grid, terrainGroup.withDepth(Depth(4)))
+        } yield (grid -> terrainGroup.withDepth(Depth(4)))
 
       for {
         helm        <- loader(Assets.Helm.jsonRef, Assets.Helm.ref, Depth(9)).toOption
@@ -80,7 +81,7 @@ object InitialLoad {
         reflections <- loader(Assets.Water.jsonRef, Assets.Water.ref, Depth(20)).toOption
         flag        <- loader(Assets.Flag.jsonRef, Assets.Flag.ref, Depth(10)).toOption
         terrain     <- terrainData
-      } yield makeAdditionalAssets(screenDimensions, helm, palm, reflections, flag, terrain._1, terrain._2, terrain._3)
+      } yield makeAdditionalAssets(screenDimensions, helm, palm, reflections, flag, terrain._1, terrain._2)
     } else None
   }
 
@@ -110,7 +111,6 @@ object InitialLoad {
       palm: SpriteAndAnimations,
       waterReflections: SpriteAndAnimations,
       flag: SpriteAndAnimations,
-      tileSize: Point,
       terrainMap: TiledGridMap[TileType],
       terrain: Group
   ): (LevelDataStore, List[Animation]) =
@@ -122,15 +122,12 @@ object InitialLoad {
         flag.sprite.withRef(22, 105).moveTo(200, 288),
         helm.sprite.withRef(31, 49).moveTo(605, 160),
         palm.sprite,
-        tileSize,
         terrainMap,
         terrain
       ),
       List(waterReflections.animations, flag.animations, helm.animations, palm.animations)
     )
 
-  val foo                 = 224
-  def bar(i: Int): Double = 0.21
   def makeStartupData(
       captain: SpriteAndAnimations,
       levelDataStore: Option[(LevelDataStore, List[Animation])]
@@ -140,9 +137,7 @@ object InitialLoad {
         StartupData(
           captain.sprite
             .modifyMaterial(m => Material.ImageEffects(m.diffuse))
-            .withRef(0, foo)
-            .moveBy(foo, foo)
-            .transformTo(Point(0, 0), Radians(0.0), Vector2(bar(foo), bar(foo))),
+            .scaleBy(MagicNumbers.bouncyDaveScaleFactor, MagicNumbers.bouncyDaveScaleFactor),
           levelDataStore.map(_._1)
         )
       )
@@ -160,7 +155,6 @@ final case class LevelDataStore(
     flag: Sprite[Material.Bitmap],
     helm: Sprite[Material.Bitmap],
     palm: Sprite[Material.Bitmap],
-    tileSize: Point,
     terrainMap: TiledGridMap[TileType],
     terrain: Group
 ) {
