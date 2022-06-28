@@ -1,0 +1,47 @@
+{ "frames": [
+ {
+  "filename": "bouncy-dave 0.aseprite",
+  "frame": { "x": 0, "y": 0, "w": 224, "h": 224 },
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 224 },
+  "sourceSize": { "w": 224, "h": 224 },
+  "duration": 100
+ },
+ {
+    "filename": "bouncy-dave 1.aseprite",
+  "frame": { "x": 224, "y": 0, "w": 224, "h": 224 },
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 224 },
+  "sourceSize": { "w": 224, "h": 224 },
+  "duration": 100
+ },
+ {
+    "filename": "bouncy-dave 2.aseprite",
+  "frame": { "x": 448, "y": 0, "w": 224, "h": 224 },
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 224 },
+  "sourceSize": { "w": 224, "h": 224 },
+  "duration": 100
+ }
+],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.8",
+  "image": "bouncy-dave.png",
+  "format": "RGBA8888",
+  "size": { "w": 672, "h": 224 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "Idle", "from": 0, "to": 3, "direction": "forward" }
+  ],
+  "layers": [
+   { "name": "Captain", "opacity": 255, "blendMode": "normal" },
+   { "name": "Effect", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

@@ -90,8 +90,11 @@ object Assets {
   }
 
   object Captain {
-    val ref: AssetName     = AssetName("Captain Clown Nose")
-    val jsonRef: AssetName = AssetName("Captain Clown Nose JSON")
+//    val ref: AssetName     = AssetName("Captain Clown Nose")
+//    val jsonRef: AssetName = AssetName("Captain Clown Nose JSON")
+
+    val ref: AssetName     = AssetName("bouncydave")
+    val jsonRef: AssetName = AssetName("bouncydave JSON")
 
     def assets(baseUrl: String): Set[AssetType] =
       Set(
