@@ -1,9 +1,12 @@
 package pirate.core
 
-import indigo._
+import indigo.*
 import indigo.json.Json
 import indigo.shared.formats.TiledGridMap
 import pirate.core.MagicNumbers
+
+import scala.runtime.AbstractFunction3
+import scala.runtime.function.JProcedure3
 
 /*
 In a nutshell, the setup function here takes the boot data (screen dimensions),
@@ -30,10 +33,10 @@ object InitialLoad {
       dice: Dice
   ): Outcome[Startup[StartupData]] =
     Outcome(
-      loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
-        .map { captain =>
-          makeStartupData(captain, levelDataStore(screenDimensions, assetCollection, dice))
-        } match {
+      (for {
+        captain  <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
+        maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
+      } yield makeStartupData(captain, maybeLds)) match {
         case Left(message) =>
           IndigoLogger.consoleLog(s"ERROR STARTING $message")
           Startup.Failure(message)
@@ -48,10 +51,15 @@ object InitialLoad {
       screenDimensions: Rectangle,
       assetCollection: AssetCollection,
       dice: Dice
-  ): Option[(LevelDataStore, List[Animation])] = {
+  ): Either[String, Option[(LevelDataStore, List[Animation])]] = {
 
-    val loader: (AssetName, AssetName, Depth) => Either[String, SpriteAndAnimations] =
-      loadAnimation(assetCollection, dice)
+    val loader: (AssetName, AssetName, Depth) => Either[String, SpriteAndAnimations] = (a, b, c) => {
+      val res = loadAnimation(assetCollection, dice)(a, b, c)
+      res match
+        case Left(err) => IndigoLogger.error(s"Error loading $a: $err")
+        case Right(_)  => IndigoLogger.info(s"Have loaded $a")
+      res
+    }
 
     // If these assets haven't been loaded yet, we're not going to try and process anything.
     if (
@@ -79,23 +87,25 @@ object InitialLoad {
         } yield (grid -> terrainGroup.withDepth(Depth(4)))
 
       for {
-        helm        <- loader(Assets.Helm.jsonRef, Assets.Helm.ref, Depth(9)).toOption
-        palm        <- loader(Assets.Trees.jsonRef, Assets.Trees.ref, Depth(1)).toOption
-        reflections <- loader(Assets.Water.jsonRef, Assets.Water.ref, Depth(20)).toOption
-        flag        <- loader(Assets.Flag.jsonRef, Assets.Flag.ref, Depth(10)).toOption
-        terrain     <- terrainData
-        itv         <- loader(Assets.Itv.jsonRef, Assets.Itv.ref, Depth(5)).toOption
-      } yield makeAdditionalAssets(
-        screenDimensions,
-        helm,
-        palm,
-        reflections,
-        flag,
-        terrain._1,
-        terrain._2,
-        itv
+        helm        <- loader(Assets.Helm.jsonRef, Assets.Helm.ref, Depth(9))
+        palm        <- loader(Assets.Trees.jsonRef, Assets.Trees.ref, Depth(1))
+        reflections <- loader(Assets.Water.jsonRef, Assets.Water.ref, Depth(20))
+        flag        <- loader(Assets.Flag.jsonRef, Assets.Flag.ref, Depth(10))
+        terrain     <- terrainData.toRight("Failed to load terrain")
+        itv         <- loader(Assets.Itv.jsonRef, Assets.Itv.ref, Depth(5))
+      } yield Some(
+        makeAdditionalAssets(
+          screenDimensions,
+          helm,
+          palm,
+          reflections,
+          flag,
+          terrain._1,
+          terrain._2,
+          itv
+        )
       )
-    } else None
+    } else Right(None)
   }
 
   // Helper function that loads Aseprite animations.

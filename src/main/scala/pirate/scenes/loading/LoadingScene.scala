@@ -67,6 +67,7 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
       Outcome(LoadingState.InProgress(percent))
 
     case AssetBundleLoaderEvent.Success(_) =>
+      IndigoLogger.info(s"Successfully loaded assets")
       Outcome(LoadingState.Complete)
         .addGlobalEvents(JumpTo(LevelScene.name))
 

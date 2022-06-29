@@ -1,11 +1,11 @@
 {
   "frames": [
     {
-      "filename": "my-pixel-img 0.png",
+      "filename": "",
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "rotated": false,
@@ -13,21 +13,21 @@
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "sourceSize": {
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "duration": 100
     },
     {
-      "filename": "my-pixel-img 1.png",
+      "filename": "",
       "frame": {
-        "x": 1092,
+        "x": 273,
         "y": 0,
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "rotated": false,
@@ -35,21 +35,21 @@
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "sourceSize": {
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "duration": 100
     },
     {
-      "filename": "my-pixel-img 2.png",
+      "filename": "",
       "frame": {
-        "x": 2184,
+        "x": 546,
         "y": 0,
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "rotated": false,
@@ -57,21 +57,21 @@
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "sourceSize": {
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "duration": 100
     },
     {
-      "filename": "my-pixel-img 3.png",
+      "filename": "",
       "frame": {
-        "x": 3276,
+        "x": 819,
         "y": 0,
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "rotated": false,
@@ -79,55 +79,11 @@
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "sourceSize": {
-        "w": 1092,
-        "h": 364
-      },
-      "duration": 100
-    },
-    {
-      "filename": "my-pixel-img 4.png",
-      "frame": {
-        "x": 4368,
-        "y": 0,
-        "w": 1092,
-        "h": 364
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 1092,
-        "h": 364
-      },
-      "sourceSize": {
-        "w": 1092,
-        "h": 364
-      },
-      "duration": 100
-    },
-    {
-      "filename": "my-pixel-img 5.png",
-      "frame": {
-        "x": 5460,
-        "y": 0,
-        "w": 1092,
-        "h": 364
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 1092,
-        "h": 364
-      },
-      "sourceSize": {
-        "w": 1092,
+        "w": 273,
         "h": 364
       },
       "duration": 100
@@ -139,11 +95,12 @@
     "image": "final-itvx.png",
     "format": "RGBA8888",
     "size": {
-      "w": 6552,
+      "w": 1092,
       "h": 364
     },
     "scale": "1",
     "frameTags": [
+      { "name": "Idle", "from": 0, "to": 3, "direction": "forward" }
     ],
     "layers": [
       {
