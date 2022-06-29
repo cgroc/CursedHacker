@@ -12,13 +12,15 @@ final case class Pirate(
     ySpeed: Double
 ) {
 
-  val position: Vertex =
-    Vertex(boundingBox.horizontalCenter, boundingBox.bottom)
+  /** Change from the demo - this is the top right corner of Pirate Dave, NOT the centre-bottom
+    */
+  val position: Vertex = boundingBox.position
+
+  val center: Vertex = boundingBox.center
 
   def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[Pirate] = {
-
-    val inputForce =
-      inputState.mapInputs(Pirate.inputMappings(state.isFalling), Vector2.zero)
+    import indigo.IndigoLogger._
+    val inputForce = inputState.mapInputs(Pirate.inputMappings(state.isFalling), Vector2.zero)
 
     val (nextBounds, collision) =
       Pirate.adjustOnCollision(
@@ -41,6 +43,7 @@ final case class Pirate(
 
     // Respawn if the pirate is below the bottom of the map.
     if (nextBounds.y > platform.rowCount.toDouble + 1)
+      consoleLog(s"Respawn! $nextBounds")
       Outcome(Pirate(nextBounds.moveTo(Pirate.RespawnPoint), nextState, gameTime.running, ySpeedNext))
         .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
     else {
@@ -49,6 +52,7 @@ final case class Pirate(
           List(PlaySound(Assets.Sounds.jumpSound, Volume.Max))
         else Nil
 
+      consoleLog(s"States: $state - $nextState")
       Outcome(Pirate(nextBounds, nextState, lastRespawn, ySpeedNext))
         .addGlobalEvents(maybeJumpSound)
     }
@@ -60,19 +64,17 @@ object Pirate {
   // Where does the captain start in model terms?
   // Right in the middle, and off the top of the screen
   // by 2 units (tiles).
-  val RespawnPoint = Vertex(9.5, -2)
+  val RespawnPoint = Vertex(0.0, 0.0)
 
   def initial: Pirate = {
 
-    val startPosition = Vertex(9.5, 6)
+    val startPosition = Vertex(0.0, 0.0)
 
     // The model space is 1 unit per tile, a tile is 32 x 32.
-    // The captain does not take up a whole block. His bounding
-    // box is the width of his body (not extremities so that he
-    // slides of the edges of platforms), by his standing height.
-    // 32 = 1 so 15/32 x 28/32 is a bounding box of
-    // (0.46875, 0.875)
-    val size = Vertex(15 / 32, 28 / 32)
+    // I am deciding that BouncyDave is a square the same size as a tile.
+    // This gives us easy maths, because the BouncyDave sprite is 224x224, so we can scale between sprites and tiles by x7,
+    // and between graphics and model by x32
+    val size = Vertex(1d, 1d)
 
     Pirate(
       BoundingBox(startPosition, size),
@@ -111,7 +113,16 @@ object Pirate {
 
   given CanEqual[Option[BoundingBox], Option[BoundingBox]] = CanEqual.derived
 
-  def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): (BoundingBox, Boolean) =
+  /*
+  Very important: only considers y.
+  So the pirate only falls or doesn't fall, no bumping into things
+   */
+  def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): (BoundingBox, Boolean) = {
+
+    import indigo.IndigoLogger._
+    // consoleLog(
+    //  s"Checking collision with proposedBounds of h: ${proposedBounds.height}, w: ${proposedBounds.width}, p: ${proposedBounds.position}"
+    // )
     platform.hitTest(proposedBounds) match {
       case Some(value) =>
         (
@@ -123,6 +134,7 @@ object Pirate {
       case None =>
         (proposedBounds, false)
     }
+  }
 
   val gravityIncrement: Double = 0.4d
 

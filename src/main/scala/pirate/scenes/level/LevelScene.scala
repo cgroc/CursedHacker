@@ -72,11 +72,8 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
   ): GlobalEvent => Outcome[LevelViewModel] = {
     case FrameTick if viewModel.notReady =>
       (viewModel, context.startUpData.levelDataStore) match {
-        case (LevelViewModel.NotReady, Some(levelDataStore)) =>
-          val changeSpace: Vertex => Point =
-            v => (v * Vertex.fromPoint(levelDataStore.tileSize)).toPoint
-
-          Outcome(LevelViewModel.Ready(changeSpace, PirateViewState.initial))
+        case (LevelViewModel.NotReady, Some(_)) =>
+          Outcome(LevelViewModel.Ready(PirateViewState.initial))
 
         case _ =>
           Outcome(viewModel)
@@ -102,7 +99,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       (model, viewModel) match {
-        case (m @ LevelModel.Ready(_, _), vm @ LevelViewModel.Ready(_, _)) =>
+        case (m @ LevelModel.Ready(_, _), vm @ LevelViewModel.Ready(_)) =>
           LevelView.draw(context.gameTime, m, vm, context.startUpData.captain, context.startUpData.levelDataStore)
 
         case _ =>
