@@ -141,11 +141,12 @@ object InitialLoad {
           .withRef(85, 0)
           .moveTo(screenDimensions.horizontalCenter, screenDimensions.verticalCenter + 5),
         flag.sprite.withRef(22, 105).moveTo(200, 288),
-        helm.sprite.withRef(31, 49).moveTo(605, 160),
+        itv.sprite
+          .moveTo(MagicNumbers.tileSize.toInt * 17, MagicNumbers.tileSize.toInt * 4)
+          .scaleBy(MagicNumbers.itvxScaleFactor, MagicNumbers.itvxScaleFactor),
         palm.sprite,
         terrainMap,
-        terrain,
-        itv.sprite
+        terrain
       ),
       List(waterReflections.animations, flag.animations, helm.animations, palm.animations, itv.animations)
     )
@@ -175,11 +176,10 @@ final case class StartupData(
 final case class LevelDataStore(
     waterReflections: Sprite[Material.Bitmap],
     flag: Sprite[Material.Bitmap],
-    helm: Sprite[Material.Bitmap],
+    itv: Sprite[Material.Bitmap],
     palm: Sprite[Material.Bitmap],
     terrainMap: TiledGridMap[TileType],
-    terrain: Group,
-    itv: Sprite[Material.Bitmap]
+    terrain: Group
 ) {
   val backTallPalm: Sprite[Material.Bitmap] =
     palm

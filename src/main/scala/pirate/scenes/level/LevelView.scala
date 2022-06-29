@@ -60,7 +60,7 @@ object LevelView {
     def drawForeground(assets: LevelDataStore): List[SceneNode] =
       List(
         assets.flag.play(),
-        assets.helm.play(),
+        assets.itv.play(),
         Assets.Trees.tallTrunkGraphic.moveTo(420, 236),
         Assets.Trees.leftLeaningTrunkGraphic.moveTo(100, 286),
         Assets.Trees.rightLeaningTrunkGraphic.moveTo(25, 166),

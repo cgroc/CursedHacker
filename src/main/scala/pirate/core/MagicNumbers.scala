@@ -5,6 +5,9 @@ import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 
 object MagicNumbers {
+
+  inline val tilesAcrossScreen = 20
+
   inline val aespriteSize = 224d
   inline val tileSize     = 32d
   inline val modelSize    = 1d
@@ -21,4 +24,11 @@ object MagicNumbers {
 
   inline def modelBoxScaledToView(box: BoundingBox): Rectangle = (box * modelToViewScaleFactor).toRectangle
   inline def modelPointScaledToView(point: Vertex): Point      = (point * modelToViewScaleFactor).toPoint
+
+  inline val itvxSize = 320d
+
+  /** Roughest maths ever - ITVX image is split into letters about 273 each. and 364 high. I am calling this a 320
+    * square, for the maths. So it's 10x too big compared to a single terrain tile
+    */
+  inline def itvxScaleFactor: Double = tileSize / itvxSize
 }
