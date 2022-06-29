@@ -5,9 +5,6 @@ import indigo.json.Json
 import indigo.shared.formats.TiledGridMap
 import pirate.core.MagicNumbers
 
-import scala.runtime.AbstractFunction3
-import scala.runtime.function.JProcedure3
-
 /*
 In a nutshell, the setup function here takes the boot data (screen dimensions),
 the asset collection, and a dice object, and produces "start up data", which is
