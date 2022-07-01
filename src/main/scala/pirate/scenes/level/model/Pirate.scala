@@ -5,11 +5,16 @@ import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 import pirate.core.Assets
 
-final case class Pirate(
+/** Based off the original pirate. This thing is collidable, and can fall, and may or may not be controlled by the
+  * input.
+  */
+final case class ItvCharacter(
     boundingBox: BoundingBox,
-    state: PirateState,
+    state: CharacterState,
     lastRespawn: Seconds,
-    ySpeed: Double
+    ySpeed: Double,
+    useInput: Boolean,
+    name: String
 ) {
 
   /** Change from the demo - this is the top right corner of Pirate Dave, NOT the centre-bottom
@@ -18,12 +23,13 @@ final case class Pirate(
 
   val center: Vertex = boundingBox.center
 
-  def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[Pirate] = {
+  def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[ItvCharacter] = {
     import indigo.IndigoLogger._
-    val inputForce = inputState.mapInputs(Pirate.inputMappings(state.isFalling), Vector2.zero)
+    val inputForce =
+      if (useInput) inputState.mapInputs(ItvCharacter.inputMappings(state.isFalling), Vector2.zero) else Vector2.zero
 
     val (nextBounds, collision) =
-      Pirate.adjustOnCollision(
+      ItvCharacter.adjustOnCollision(
         platform,
         boundingBox.moveBy(
           Vertex(inputForce.x, ySpeed) * gameTime.delta.toDouble
@@ -31,10 +37,10 @@ final case class Pirate(
       )
 
     val ySpeedNext: Double =
-      Pirate.decideNextSpeedY(state.inMidAir, boundingBox.y, nextBounds.y, ySpeed, inputForce.y)
+      ItvCharacter.decideNextSpeedY(state.inMidAir, boundingBox.y, nextBounds.y, ySpeed, inputForce.y)
 
     val nextState =
-      Pirate.nextStateFromForceDiff(
+      ItvCharacter.nextStateFromForceDiff(
         state,
         collision,
         boundingBox.position.toVector2,
@@ -44,7 +50,16 @@ final case class Pirate(
     // Respawn if the pirate is below the bottom of the map.
     if (nextBounds.y > platform.rowCount.toDouble + 1)
       consoleLog(s"Respawn! $nextBounds")
-      Outcome(Pirate(nextBounds.moveTo(Pirate.RespawnPoint), nextState, gameTime.running, ySpeedNext))
+      Outcome(
+        ItvCharacter(
+          nextBounds.moveTo(ItvCharacter.RespawnPoint),
+          nextState,
+          gameTime.running,
+          ySpeedNext,
+          useInput,
+          name
+        )
+      )
         .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
     else {
       val maybeJumpSound =
@@ -53,33 +68,46 @@ final case class Pirate(
         else Nil
 
       consoleLog(s"States: $state - $nextState")
-      Outcome(Pirate(nextBounds, nextState, lastRespawn, ySpeedNext))
+      Outcome(ItvCharacter(nextBounds, nextState, lastRespawn, ySpeedNext, useInput, name))
         .addGlobalEvents(maybeJumpSound)
     }
   }
 }
 
-object Pirate {
+object ItvCharacter {
 
-  // Where does the captain start in model terms?
+  // Where does the Dave start in model terms?
   // Top left corner, but one square accross so he isn't inside a wall.
   val RespawnPoint = Vertex(1.0, 0.0)
 
-  def initial: Pirate = {
+  // The model space is 1 unit per tile, a tile is 32 x 32.
+  // I am deciding that all our sprites are a square the same size as a tile.
+  // This gives us easy maths, because the BouncyDave sprite is 224x224, so we can scale between sprites and tiles by x7,
+  // and between graphics and model by x32
+  val size = Vertex(1d, 1d)
 
-    // The model space is 1 unit per tile, a tile is 32 x 32.
-    // I am deciding that BouncyDave is a square the same size as a tile.
-    // This gives us easy maths, because the BouncyDave sprite is 224x224, so we can scale between sprites and tiles by x7,
-    // and between graphics and model by x32
-    val size = Vertex(1d, 1d)
-
-    Pirate(
+  def initialDave: ItvCharacter =
+    ItvCharacter(
       BoundingBox(RespawnPoint, size),
-      PirateState.FallingRight,
+      CharacterState.FallingRight,
       Seconds.zero,
-      0
+      0,
+      useInput = true,
+      "Dave"
     )
-  }
+
+  /** Starting position is in model terms, so should be < (20, 17) Names must be unique, they are used to track the view
+    * state
+    */
+  def otherItvCharacter(name: String, startingPosition: Vertex): ItvCharacter =
+    ItvCharacter(
+      BoundingBox(startingPosition, size),
+      CharacterState.FallingRight,
+      Seconds.zero,
+      0,
+      useInput = false,
+      name
+    )
 
   val inputMappings: Boolean => InputMapping[Vector2] = isFalling => {
     val xSpeed: Double = if (isFalling) 2.0d else 3.0d
@@ -150,11 +178,11 @@ object Pirate {
       8.0d
 
   def nextStateFromForceDiff(
-      previousState: PirateState,
+      previousState: CharacterState,
       collisionOccurred: Boolean,
       oldForce: Vector2,
       newForce: Vector2
-  ): PirateState = {
+  ): CharacterState = {
     val forceDiff = newForce - oldForce
 
     if (forceDiff.y > -0.001 && forceDiff.y < 0.001 && collisionOccurred)
@@ -167,46 +195,46 @@ object Pirate {
   }
 
   private def nextStateFromDiffX(
-      movingLeft: PirateState,
-      movingRight: PirateState,
-      otherwise: PirateState
-  ): Double => PirateState =
+      movingLeft: CharacterState,
+      movingRight: CharacterState,
+      otherwise: CharacterState
+  ): Double => CharacterState =
     xDiff =>
       if (xDiff < -0.01) movingLeft
       else if (xDiff > 0.01) movingRight
       else otherwise
 
-  lazy val nextStanding: Double => PirateState =
+  lazy val nextStanding: Double => CharacterState =
     nextStateFromDiffX(
-      PirateState.MoveLeft,
-      PirateState.MoveRight,
-      PirateState.Idle
+      CharacterState.MoveLeft,
+      CharacterState.MoveRight,
+      CharacterState.Idle
     )
 
-  def nextFalling(previousState: PirateState): Double => PirateState =
+  def nextFalling(previousState: CharacterState): Double => CharacterState =
     nextStateFromDiffX(
-      PirateState.FallingLeft,
-      PirateState.FallingRight,
+      CharacterState.FallingLeft,
+      CharacterState.FallingRight,
       previousState match {
-        case PirateState.FallingLeft | PirateState.JumpingLeft =>
-          PirateState.FallingLeft
+        case CharacterState.FallingLeft | CharacterState.JumpingLeft =>
+          CharacterState.FallingLeft
 
-        case PirateState.FallingRight | PirateState.JumpingRight =>
-          PirateState.FallingRight
+        case CharacterState.FallingRight | CharacterState.JumpingRight =>
+          CharacterState.FallingRight
 
         case _ =>
-          PirateState.FallingRight
+          CharacterState.FallingRight
       }
     )
 
-  def nextJumping(previousState: PirateState): Double => PirateState =
+  def nextJumping(previousState: CharacterState): Double => CharacterState =
     nextStateFromDiffX(
-      PirateState.JumpingLeft,
-      PirateState.JumpingRight,
+      CharacterState.JumpingLeft,
+      CharacterState.JumpingRight,
       previousState match {
-        case l @ PirateState.JumpingLeft  => l
-        case r @ PirateState.JumpingRight => r
-        case _                            => PirateState.JumpingRight
+        case l @ CharacterState.JumpingLeft  => l
+        case r @ CharacterState.JumpingRight => r
+        case _                               => CharacterState.JumpingRight
       }
     )
 

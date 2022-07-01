@@ -10,8 +10,8 @@ import pirate.core.{StartupData, Model, ViewModel}
 import pirate.scenes.level.model.Platform
 import pirate.scenes.level.model.LevelModel
 import pirate.scenes.level.viewmodel.LevelViewModel
-import pirate.scenes.level.viewmodel.PirateViewState
-import pirate.scenes.level.model.Pirate
+import pirate.scenes.level.viewmodel.CharacterViewState
+import pirate.scenes.level.model.ItvCharacter
 import indigoextras.geometry.Vertex
 
 final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, ViewModel] {
@@ -49,7 +49,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
         case (LevelModel.NotReady, Some(levelDataStore)) =>
           Outcome(
             LevelModel.Ready(
-              Pirate.initial,
+              List(ItvCharacter.initialDave, ItvCharacter.otherItvCharacter("Dougie", Vertex(6d, 0d))),
               Platform.fromTerrainMap(levelDataStore.terrainMap)
             )
           )
@@ -73,7 +73,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
     case FrameTick if viewModel.notReady =>
       (viewModel, context.startUpData.levelDataStore) match {
         case (LevelViewModel.NotReady, Some(_)) =>
-          Outcome(LevelViewModel.Ready(PirateViewState.initial))
+          Outcome(LevelViewModel.Ready.initial)
 
         case _ =>
           Outcome(viewModel)
@@ -84,8 +84,8 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
         case LevelModel.NotReady =>
           Outcome(viewModel)
 
-        case LevelModel.Ready(pirate, _) =>
-          viewModel.update(context.gameTime, pirate)
+        case LevelModel.Ready(characters, _) =>
+          viewModel.update(context.gameTime, characters)
       }
 
     case _ =>
@@ -100,7 +100,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
     Outcome(
       (model, viewModel) match {
         case (m @ LevelModel.Ready(_, _), vm @ LevelViewModel.Ready(_)) =>
-          LevelView.draw(context.gameTime, m, vm, context.startUpData.captain, context.startUpData.levelDataStore)
+          LevelView.draw(context.gameTime, m, vm, context.startUpData.spritesByName, context.startUpData.levelDataStore)
 
         case _ =>
           SceneUpdateFragment.empty

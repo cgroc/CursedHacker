@@ -31,9 +31,16 @@ object InitialLoad {
   ): Outcome[Startup[StartupData]] =
     Outcome(
       (for {
-        captain  <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
+        dave     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
+        dougie   <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.dougieRef, Depth(2))
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
-      } yield makeStartupData(captain, maybeLds)) match {
+      } yield makeStartupData(
+        Map(
+          "Dave"   -> dave,
+          "Dougie" -> dougie
+        ),
+        maybeLds
+      )) match {
         case Left(message) =>
           IndigoLogger.consoleLog(s"ERROR STARTING $message")
           Startup.Failure(message)
@@ -152,25 +159,29 @@ object InitialLoad {
     )
 
   def makeStartupData(
-      captain: SpriteAndAnimations,
+      spritesByName: Map[String, SpriteAndAnimations],
       levelDataStore: Option[(LevelDataStore, List[Animation])]
   ): Startup.Success[StartupData] =
     Startup
       .Success(
         StartupData(
-          captain.sprite
-            .modifyMaterial(m => Material.ImageEffects(m.diffuse))
-            .scaleBy(MagicNumbers.bouncyDaveScaleFactor, MagicNumbers.bouncyDaveScaleFactor),
+          spritesByName.view
+            .mapValues(
+              _.sprite
+                .modifyMaterial(m => Material.ImageEffects(m.diffuse))
+                .scaleBy(MagicNumbers.bouncyDaveScaleFactor, MagicNumbers.bouncyDaveScaleFactor)
+            )
+            .toMap,
           levelDataStore.map(_._1)
         )
       )
-      .addAnimations(captain.animations)
+      .addAnimations(spritesByName.values.toList.map(_.animations))
       .addAnimations(levelDataStore.map(_._2).getOrElse(Nil))
 
 }
 
 final case class StartupData(
-    captain: Sprite[Material.ImageEffects],
+    spritesByName: Map[String, Sprite[Material.ImageEffects]],
     levelDataStore: Option[LevelDataStore]
 )
 final case class LevelDataStore(
