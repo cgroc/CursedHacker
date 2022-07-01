@@ -62,13 +62,10 @@ final case class Pirate(
 object Pirate {
 
   // Where does the captain start in model terms?
-  // Right in the middle, and off the top of the screen
-  // by 2 units (tiles).
-  val RespawnPoint = Vertex(0.0, 0.0)
+  // Top left corner, but one square accross so he isn't inside a wall.
+  val RespawnPoint = Vertex(1.0, 0.0)
 
   def initial: Pirate = {
-
-    val startPosition = Vertex(0.0, 0.0)
 
     // The model space is 1 unit per tile, a tile is 32 x 32.
     // I am deciding that BouncyDave is a square the same size as a tile.
@@ -77,7 +74,7 @@ object Pirate {
     val size = Vertex(1d, 1d)
 
     Pirate(
-      BoundingBox(startPosition, size),
+      BoundingBox(RespawnPoint, size),
       PirateState.FallingRight,
       Seconds.zero,
       0

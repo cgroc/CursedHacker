@@ -140,7 +140,7 @@ object InitialLoad {
         waterReflections.sprite
           .withRef(85, 0)
           .moveTo(screenDimensions.horizontalCenter, screenDimensions.verticalCenter + 5),
-        flag.sprite.withRef(22, 105).moveTo(200, 288),
+        flag.sprite.withRef(22, 105).moveTo(200, 256),
         itv.sprite
           .moveTo(MagicNumbers.tileSize.toInt * 17, MagicNumbers.tileSize.toInt * 4)
           .scaleBy(MagicNumbers.itvxScaleFactor, MagicNumbers.itvxScaleFactor),
