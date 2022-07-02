@@ -1,8 +1,9 @@
 package pirate.scenes.level
 
 import indigo.*
-import pirate.core.{Assets, LevelDataStore, MagicNumbers}
+import pirate.core.{Assets, Constants, LevelDataStore}
 import indigoextras.geometry.{BoundingBox, Vertex}
+import pirate.core.Constants.CharacterName
 import pirate.scenes.level.model.CharacterState
 import pirate.scenes.level.model.ItvCharacter
 import pirate.scenes.level.model.LevelModel
@@ -18,7 +19,7 @@ object LevelView {
       gameTime: GameTime,
       model: LevelModel.Ready,
       viewModel: LevelViewModel.Ready,
-      spritesByName: Map[String, Sprite[Material.ImageEffects]],
+      spritesByName: Map[CharacterName, Sprite[Material.ImageEffects]],
       levelDataStore: Option[LevelDataStore]
   ): SceneUpdateFragment =
     Level.draw(levelDataStore) |+|
@@ -34,7 +35,7 @@ object LevelView {
                 errorSprite
               }
             ),
-            debug = MagicNumbers.drawCharacterBoxes
+            debug = Constants.Debug.drawCharacterBoxes
           )
         }
         .reduceOption(_ |+| _)
@@ -112,7 +113,7 @@ object LevelView {
                 character,
                 characterViewState,
                 sprite,
-                (v: Vertex) => (v * MagicNumbers.tileSize).toPoint
+                (v: Vertex) => (v * Constants.MagicNumbers.tileSize).toPoint
               )
             )
           )
@@ -121,7 +122,7 @@ object LevelView {
           if (debug)
             Layer(
               Shape.Box(
-                MagicNumbers.modelBoxScaledToView(character.boundingBox),
+                Constants.MagicNumbers.modelBoxScaledToView(character.boundingBox),
                 Fill.None,
                 Stroke(1, RGBA.Red)
               )

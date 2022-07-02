@@ -4,7 +4,7 @@ import indigo.shared.input.Mouse
 import indigo.shared.input.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.datatypes.Vector2
-import indigo.shared.constants.Key
+import indigo.shared.Constants.MagicNumbers.Key
 import indigo.shared.events.KeyboardEvent.KeyDown
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex

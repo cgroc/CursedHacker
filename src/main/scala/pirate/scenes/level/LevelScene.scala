@@ -7,6 +7,7 @@ import pirate.scenes.level.subsystems.CloudsAutomata
 import pirate.scenes.level.subsystems.CloudsSubSystem
 import pirate.scenes.level.LevelView
 import pirate.core.{StartupData, Model, ViewModel}
+import pirate.core.Constants.CharacterName
 import pirate.scenes.level.model.Platform
 import pirate.scenes.level.model.LevelModel
 import pirate.scenes.level.viewmodel.LevelViewModel
@@ -49,7 +50,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
         case (LevelModel.NotReady, Some(levelDataStore)) =>
           Outcome(
             LevelModel.Ready(
-              List(ItvCharacter.initialDave, ItvCharacter.otherItvCharacter("Dougie", Vertex(6d, 0d))),
+              List(ItvCharacter.initialDave, ItvCharacter.otherItvCharacter(CharacterName.Dougie, Vertex(7d, 0d))),
               Platform.fromTerrainMap(levelDataStore.terrainMap)
             )
           )

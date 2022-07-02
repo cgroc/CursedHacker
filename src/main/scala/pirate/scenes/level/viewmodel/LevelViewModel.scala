@@ -3,6 +3,7 @@ package pirate.scenes.level.viewmodel
 import indigo._
 import indigoextras.geometry.Vertex
 import pirate.scenes.level.model.ItvCharacter
+import pirate.core.Constants.CharacterName
 
 /*
 The view model cannot be initialised at game start up, because we want to load
@@ -26,7 +27,7 @@ object LevelViewModel {
   }
 
   // The initialised / useable ViewModel
-  final case class Ready(characterStates: Map[String, CharacterViewState]) extends LevelViewModel {
+  final case class Ready(characterStates: Map[CharacterName, CharacterViewState]) extends LevelViewModel {
     val notReady: Boolean = false
 
     def update(gameTime: GameTime, characters: List[ItvCharacter]): Outcome[LevelViewModel] =

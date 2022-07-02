@@ -3,7 +3,8 @@ package pirate.core
 import indigo.*
 import indigo.json.Json
 import indigo.shared.formats.TiledGridMap
-import pirate.core.MagicNumbers
+import pirate.core.Constants
+import pirate.core.Constants.CharacterName
 
 /*
 In a nutshell, the setup function here takes the boot data (screen dimensions),
@@ -36,8 +37,8 @@ object InitialLoad {
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
       } yield makeStartupData(
         Map(
-          "Dave"   -> dave,
-          "Dougie" -> dougie
+          Constants.CharacterName.Dave   -> dave,
+          Constants.CharacterName.Dougie -> dougie
         ),
         maybeLds
       )) match {
@@ -149,8 +150,8 @@ object InitialLoad {
           .moveTo(screenDimensions.horizontalCenter, screenDimensions.verticalCenter + 5),
         flag.sprite.withRef(22, 105).moveTo(200, 256),
         itv.sprite
-          .moveTo(MagicNumbers.tileSize.toInt * 17, MagicNumbers.tileSize.toInt * 4)
-          .scaleBy(MagicNumbers.itvxScaleFactor, MagicNumbers.itvxScaleFactor),
+          .moveTo(Constants.MagicNumbers.tileSize.toInt * 17, Constants.MagicNumbers.tileSize.toInt * 4)
+          .scaleBy(Constants.MagicNumbers.itvxScaleFactor, Constants.MagicNumbers.itvxScaleFactor),
         palm.sprite,
         terrainMap,
         terrain
@@ -159,7 +160,7 @@ object InitialLoad {
     )
 
   def makeStartupData(
-      spritesByName: Map[String, SpriteAndAnimations],
+      spritesByName: Map[CharacterName, SpriteAndAnimations],
       levelDataStore: Option[(LevelDataStore, List[Animation])]
   ): Startup.Success[StartupData] =
     Startup
@@ -169,7 +170,7 @@ object InitialLoad {
             .mapValues(
               _.sprite
                 .modifyMaterial(m => Material.ImageEffects(m.diffuse))
-                .scaleBy(MagicNumbers.bouncyDaveScaleFactor, MagicNumbers.bouncyDaveScaleFactor)
+                .scaleBy(Constants.MagicNumbers.bouncyDaveScaleFactor, Constants.MagicNumbers.bouncyDaveScaleFactor)
             )
             .toMap,
           levelDataStore.map(_._1)
@@ -181,7 +182,7 @@ object InitialLoad {
 }
 
 final case class StartupData(
-    spritesByName: Map[String, Sprite[Material.ImageEffects]],
+    spritesByName: Map[CharacterName, Sprite[Material.ImageEffects]],
     levelDataStore: Option[LevelDataStore]
 )
 final case class LevelDataStore(

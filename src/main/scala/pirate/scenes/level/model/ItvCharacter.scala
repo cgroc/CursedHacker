@@ -1,9 +1,10 @@
 package pirate.scenes.level.model
 
-import indigo._
+import indigo.*
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 import pirate.core.Assets
+import pirate.core.Constants.CharacterName
 
 /** Based off the original pirate. This thing is collidable, and can fall, and may or may not be controlled by the
   * input.
@@ -14,7 +15,8 @@ final case class ItvCharacter(
     lastRespawn: Seconds,
     ySpeed: Double,
     useInput: Boolean,
-    name: String
+    name: CharacterName,
+    respawnPoint: Vertex
 ) {
 
   /** Change from the demo - this is the top right corner of Pirate Dave, NOT the centre-bottom
@@ -51,13 +53,11 @@ final case class ItvCharacter(
     if (nextBounds.y > platform.rowCount.toDouble + 1)
       consoleLog(s"Respawn! $nextBounds")
       Outcome(
-        ItvCharacter(
-          nextBounds.moveTo(ItvCharacter.RespawnPoint),
-          nextState,
-          gameTime.running,
-          ySpeedNext,
-          useInput,
-          name
+        copy(
+          boundingBox = nextBounds.moveTo(respawnPoint),
+          state = nextState,
+          lastRespawn = gameTime.running,
+          ySpeed = ySpeedNext
         )
       )
         .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
@@ -68,17 +68,13 @@ final case class ItvCharacter(
         else Nil
 
       consoleLog(s"States: $state - $nextState")
-      Outcome(ItvCharacter(nextBounds, nextState, lastRespawn, ySpeedNext, useInput, name))
+      Outcome(copy(boundingBox = nextBounds, state = nextState, lastRespawn = lastRespawn, ySpeed = ySpeedNext))
         .addGlobalEvents(maybeJumpSound)
     }
   }
 }
 
 object ItvCharacter {
-
-  // Where does the Dave start in model terms?
-  // Top left corner, but one square accross so he isn't inside a wall.
-  val RespawnPoint = Vertex(1.0, 0.0)
 
   // The model space is 1 unit per tile, a tile is 32 x 32.
   // I am deciding that all our sprites are a square the same size as a tile.
@@ -88,25 +84,26 @@ object ItvCharacter {
 
   def initialDave: ItvCharacter =
     ItvCharacter(
-      BoundingBox(RespawnPoint, size),
+      BoundingBox(Vertex(1.0, 0.0), size),
       CharacterState.FallingRight,
       Seconds.zero,
       0,
       useInput = true,
-      "Dave"
+      CharacterName.Dave,
+      Vertex(1.0, 0.0)
     )
 
-  /** Starting position is in model terms, so should be < (20, 17) Names must be unique, they are used to track the view
-    * state
+  /** Starting position is in model terms, so should be < (20, 17)
     */
-  def otherItvCharacter(name: String, startingPosition: Vertex): ItvCharacter =
+  def otherItvCharacter(name: CharacterName, startingPosition: Vertex): ItvCharacter =
     ItvCharacter(
       BoundingBox(startingPosition, size),
       CharacterState.FallingRight,
       Seconds.zero,
       0,
       useInput = false,
-      name
+      name,
+      startingPosition
     )
 
   val inputMappings: Boolean => InputMapping[Vector2] = isFalling => {
