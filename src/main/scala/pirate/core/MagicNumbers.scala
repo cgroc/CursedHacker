@@ -6,6 +6,9 @@ import indigoextras.geometry.Vertex
 
 object MagicNumbers {
 
+  // Do you want a red box highlighting the bounding box of each character
+  inline val drawCharacterBoxes = true
+
   inline val tilesAcrossScreen = 20
 
   inline val aespriteSize = 224d

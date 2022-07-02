@@ -93,7 +93,7 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
     Outcome(
       LoadingView.draw(
         screenDimensions,
-        context.startUpData.captain,
+        context.startUpData.spritesByName.head._2,
         loadingState
       )
     )

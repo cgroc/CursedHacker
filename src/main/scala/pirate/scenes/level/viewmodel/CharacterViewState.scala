@@ -1,9 +1,8 @@
 package pirate.scenes.level.viewmodel
 
-import indigo._
-import pirate.scenes.level.model.Pirate
+import indigo.*
+import pirate.scenes.level.model.{ItvCharacter, CharacterState}
 import pirate.core.Assets
-import pirate.scenes.level.model.PirateState
 
 /*
 The model that describes the level is concerned with abstract
@@ -11,7 +10,7 @@ boxes floating through space, and is very important to the games
 core mechanics.
 
 However, that data isn't enough to make the experience nice for
-the player. We need to store some transient state is important 
+the player. We need to store some transient state is important
 for the presentation, but meaningless in terms of the pure mechanics
 of the game.
 
@@ -22,18 +21,20 @@ don't play it too often.
 
 We could store these values in the model, but the model doesn't care
 and this way is a bit cleaner.
-*/
-final case class PirateViewState(
+
+This is PER CHARACTER
+ */
+final case class CharacterViewState(
     facingRight: Boolean,
     soundLastPlayed: Seconds
 ) {
 
-  def update(gameTime: GameTime, pirate: Pirate): Outcome[PirateViewState] =
-    pirate.state match {
-      case PirateState.Idle =>
+  def update(gameTime: GameTime, character: ItvCharacter): Outcome[CharacterViewState] =
+    character.state match {
+      case CharacterState.Idle =>
         Outcome(this)
 
-      case PirateState.MoveLeft =>
+      case CharacterState.MoveLeft =>
         val (walkingSound, lastPlayed) = updateWalkSound(gameTime, soundLastPlayed)
 
         Outcome(
@@ -43,7 +44,7 @@ final case class PirateViewState(
           )
         ).addGlobalEvents(walkingSound)
 
-      case PirateState.MoveRight =>
+      case CharacterState.MoveRight =>
         val (walkingSound, lastPlayed) = updateWalkSound(gameTime, soundLastPlayed)
 
         Outcome(
@@ -53,16 +54,16 @@ final case class PirateViewState(
           )
         ).addGlobalEvents(walkingSound)
 
-      case PirateState.FallingLeft =>
+      case CharacterState.FallingLeft =>
         Outcome(this.copy(facingRight = false))
 
-      case PirateState.FallingRight =>
+      case CharacterState.FallingRight =>
         Outcome(this.copy(facingRight = true))
 
-      case PirateState.JumpingLeft =>
+      case CharacterState.JumpingLeft =>
         Outcome(this.copy(facingRight = false))
 
-      case PirateState.JumpingRight =>
+      case CharacterState.JumpingRight =>
         Outcome(this.copy(facingRight = true))
 
     }
@@ -73,9 +74,9 @@ final case class PirateViewState(
     else (Nil, soundLastPlayed)
 
 }
-object PirateViewState {
+object CharacterViewState {
 
-  val initial: PirateViewState =
-    PirateViewState(true, Seconds.zero)
+  val initial: CharacterViewState =
+    CharacterViewState(true, Seconds.zero)
 
 }

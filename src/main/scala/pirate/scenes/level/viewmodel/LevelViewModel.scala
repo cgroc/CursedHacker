@@ -2,7 +2,7 @@ package pirate.scenes.level.viewmodel
 
 import indigo._
 import indigoextras.geometry.Vertex
-import pirate.scenes.level.model.Pirate
+import pirate.scenes.level.model.ItvCharacter
 
 /*
 The view model cannot be initialised at game start up, because we want to load
@@ -13,7 +13,7 @@ which is stored in the Tiled data.
 sealed trait LevelViewModel {
   val notReady: Boolean
 
-  def update(gameTime: GameTime, pirate: Pirate): Outcome[LevelViewModel]
+  def update(gameTime: GameTime, characters: List[ItvCharacter]): Outcome[LevelViewModel]
 }
 object LevelViewModel {
 
@@ -21,22 +21,27 @@ object LevelViewModel {
   case object NotReady extends LevelViewModel {
     val notReady: Boolean = true
 
-    def update(gameTime: GameTime, pirate: Pirate): Outcome[LevelViewModel] =
+    def update(gameTime: GameTime, characters: List[ItvCharacter]): Outcome[LevelViewModel] =
       Outcome(this)
   }
 
   // The initialised / useable ViewModel
-  final case class Ready(pirateViewState: PirateViewState) extends LevelViewModel {
+  final case class Ready(characterStates: Map[String, CharacterViewState]) extends LevelViewModel {
     val notReady: Boolean = false
 
-    def update(gameTime: GameTime, pirate: Pirate): Outcome[LevelViewModel] =
-      pirateViewState
-        .update(gameTime, pirate)
-        .map(ps =>
-          this.copy(
-            pirateViewState = ps
-          )
-        )
+    def update(gameTime: GameTime, characters: List[ItvCharacter]): Outcome[LevelViewModel] =
+      Outcome
+        .sequence(characters.map { character =>
+          (characterStates.get(character.name) match {
+            case Some(state) => state.update(gameTime, character)
+            case None        => Outcome(CharacterViewState.initial)
+          }).map(character.name -> _)
+        })
+        .map(states => Ready(states.toMap))
+  }
+
+  object Ready {
+    val initial: Ready = Ready(Map.empty)
   }
 
 }
