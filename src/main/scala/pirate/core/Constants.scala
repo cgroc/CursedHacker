@@ -8,6 +8,7 @@ object Constants {
   enum CharacterName:
     case Dave   extends CharacterName
     case Dougie extends CharacterName
+    case Maya   extends CharacterName
 
   object Debug {
     // Do you want a red box highlighting the bounding box of each character
