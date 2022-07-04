@@ -50,7 +50,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
         case (LevelModel.NotReady, Some(levelDataStore)) =>
           Outcome(
             LevelModel.Ready(
-              List(ItvCharacter.initialDave, ItvCharacter.otherItvCharacter(CharacterName.Dougie, Vertex(7d, 0d))),
+              List(ItvCharacter.initialDave, ItvCharacter.otherItvCharacter(CharacterName.Dougie, Vertex(7d, 0d)), ItvCharacter.otherItvCharacter(CharacterName.Maya, Vertex(10d, 0d))),
               Platform.fromTerrainMap(levelDataStore.terrainMap)
             )
           )
