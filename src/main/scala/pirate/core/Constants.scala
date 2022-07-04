@@ -5,6 +5,7 @@ import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 
 object Constants {
+  inline val frameRate = 60
   enum CharacterName:
     case Dave   extends CharacterName
     case Dougie extends CharacterName
