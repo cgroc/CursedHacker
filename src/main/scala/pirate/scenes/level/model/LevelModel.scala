@@ -19,9 +19,10 @@ object LevelModel {
     def prev: Screen
   }
   object Screen {
+    // NOTE: When adding a screen, remember to point Zero.prev to your new screen for wrapping around
     case object Zero extends Screen {
       override def next: Screen = Screen.One
-      override def prev: Screen = Screen.Two
+      override def prev: Screen = Screen.Three
     }
     case object One extends Screen {
       override def next: Screen = Screen.Two
