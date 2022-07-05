@@ -2,10 +2,39 @@ package pirate.scenes.level.model
 
 import indigo.*
 import indigoextras.geometry.{BoundingBox, LineSegment, Vertex}
-import indigoextras.geometry.BoundingBox.toLineSegments
+import indigoextras.geometry.BoundingBox.{contract, toLineSegments}
 import pirate.core.Assets
 import pirate.core.Constants.CharacterName
 import pirate.scenes.level.model.ItvCharacter.Action
+import pirate.scenes.level.model.LevelModel.ScreenChange
+
+final case class PlayerCharacter(character: ItvCharacter) {
+  def update(
+      gameTime: GameTime,
+      commands: Set[Action],
+      platform: Platform,
+      otherCharacters: List[ItvCharacter]
+  ): Outcome[(ScreenChange, PlayerCharacter)] =
+    character.update(gameTime, commands, platform, otherCharacters).map { char =>
+      if (char.boundingBox.x < (0 - char.boundingBox.width))
+        val xTransform = platform.columnCount.toDouble
+        val yRound     = char.boundingBox.y.round - char.boundingBox.y
+        val moved      = char.boundingBox.moveBy(xTransform, yRound)
+        IndigoLogger.info(
+          s"SCREEN CHANGE: PREVIOUS (${char.boundingBox} to $moved)"
+        )
+        ScreenChange.Previous -> PlayerCharacter(char.copy(boundingBox = moved))
+      else if (char.boundingBox.x > (platform.columnCount))
+        val xTransform = -platform.columnCount.toDouble
+        val yRound     = char.boundingBox.y.round - char.boundingBox.y
+        val moved      = char.boundingBox.moveBy(xTransform, yRound)
+        IndigoLogger.info(
+          s"SCREEN CHANGE: NEXT (${char.boundingBox} to $moved)"
+        )
+        ScreenChange.Next -> PlayerCharacter(char.copy(boundingBox = moved))
+      else ScreenChange.Remain -> PlayerCharacter(char)
+    }
+}
 
 /** Based off the original pirate. This thing is collidable, and can fall, and may or may not be controlled by the
   * input.
@@ -73,7 +102,7 @@ final case class ItvCharacter(
           List(PlaySound(Assets.Sounds.jumpSound, Volume.Max))
         else Nil
 
-      consoleLog(s"States: $state - $nextState")
+      // consoleLog(s"States: $state - $nextState")
       Outcome(
         copy(
           boundingBox = nextBounds,
@@ -120,7 +149,7 @@ object ItvCharacter {
   // and between graphics and model by x32
   val size = Vertex(1d, 1d)
 
-  def initialDave: ItvCharacter =
+  def initialDave: PlayerCharacter = PlayerCharacter(
     ItvCharacter(
       BoundingBox(Vertex(1.0d, 0.0d), size),
       CharacterState.FallingRight,
@@ -130,6 +159,7 @@ object ItvCharacter {
       CharacterName.Dave,
       Vertex(1.0, 0.0)
     )
+  )
 
   /** Starting position is in model terms, so should be < (20, 17)
     */
@@ -150,12 +180,11 @@ object ItvCharacter {
   Very important: only considers y.
   So the pirate only falls or doesn't fall, no bumping into things
    */
-  def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): BoundingBox = {
-
-    import indigo.IndigoLogger._
-    consoleLog(
-      s"Checking collision with proposedBounds of h: ${proposedBounds.height}, w: ${proposedBounds.width}, p: ${proposedBounds.position}"
-    )
+  def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): BoundingBox =
+//    import indigo.IndigoLogger._
+//    consoleLog(
+//      s"Checking collision with proposedBounds of h: ${proposedBounds.height}, w: ${proposedBounds.width}, p: ${proposedBounds.position}"
+//    )
     platform.hitTest(proposedBounds) match {
       case Some(value) =>
         proposedBounds.moveTo(proposedBounds.position.withY(value.y - proposedBounds.height))
@@ -163,7 +192,6 @@ object ItvCharacter {
       case None =>
         proposedBounds
     }
-  }
 
   val gravityIncrement: Double = 0.4d
   val jumpSpeed: Double        = -8.0d

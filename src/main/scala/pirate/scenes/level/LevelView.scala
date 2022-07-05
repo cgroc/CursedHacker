@@ -36,7 +36,7 @@ object LevelView {
            )
          )
        else SceneUpdateFragment.empty) |+|
-      model.characters
+      (model.dave.character +: model.currentCharacters)
         .map { character =>
           CharacterDrawer.draw(
             gameTime,
@@ -96,11 +96,11 @@ object LevelView {
         assets.itv.play(),
         Assets.Trees.tallTrunkGraphic.moveTo(420, 204),
         Assets.Trees.leftLeaningTrunkGraphic.moveTo(100, 254),
-        Assets.Trees.rightLeaningTrunkGraphic.moveTo(25, 134),
+        Assets.Trees.rightLeaningTrunkGraphic.moveTo(25, 166),
         assets.backTallPalm.moveTo(420, 194).changeCycle(CycleLabel("P Back")).play(),
         assets.palm.moveTo(397, 172).play(),
         assets.palm.moveTo(77, 219).play(),
-        assets.palm.moveTo(37, 88).play(),
+        assets.palm.moveTo(37, 120).play(),
         Assets.Static.chestGraphic.moveTo(380, 256),
         assets.terrain
       )
