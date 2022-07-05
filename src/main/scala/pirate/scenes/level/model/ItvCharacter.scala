@@ -29,7 +29,7 @@ final case class PlayerCharacter(character: ItvCharacter) {
         val yRound     = char.boundingBox.y.round - char.boundingBox.y
         val moved      = char.boundingBox.moveBy(xTransform, yRound)
         IndigoLogger.info(
-          s"SCREEN CHANGE: PREVIOUS (${char.boundingBox} to $moved)"
+          s"SCREEN CHANGE: NEXT (${char.boundingBox} to $moved)"
         )
         ScreenChange.Next -> PlayerCharacter(char.copy(boundingBox = moved))
       else ScreenChange.Remain -> PlayerCharacter(char)

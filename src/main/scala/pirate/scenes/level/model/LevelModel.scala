@@ -62,10 +62,12 @@ object LevelModel {
         .flatMap { case (nextScreen, newDave) =>
           nextScreen match
             case ScreenChange.Next =>
+              IndigoLogger.info(s"$currentScreen to ${currentScreen.next}")
               Outcome {
                 this.copy(dave = newDave, currentScreen = currentScreen.next)
               }
             case ScreenChange.Previous =>
+              IndigoLogger.info(s"$currentScreen to ${currentScreen.prev}")
               Outcome {
                 this.copy(dave = newDave, currentScreen = currentScreen.prev)
               }
