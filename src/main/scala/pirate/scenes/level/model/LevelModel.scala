@@ -32,8 +32,12 @@ object LevelModel {
       override def prev: Screen = Screen.One
     }
     case object Three extends Screen {
-      override def next: Screen = Screen.Zero
+      override def next: Screen = Screen.Four
       override def prev: Screen = Screen.Two
+    }
+    case object Four extends Screen {
+      override def next: Screen = Screen.Zero
+      override def prev: Screen = Screen.Three
     }
   }
 
