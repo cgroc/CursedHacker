@@ -17,18 +17,21 @@ final case class PlayerCharacter(character: ItvCharacter) {
   ): Outcome[(ScreenChange, PlayerCharacter)] =
     character.update(gameTime, commands, platform, otherCharacters).map { char =>
       if (char.boundingBox.x < (0 - char.boundingBox.width))
+        val xTransform = platform.columnCount.toDouble
+        val yRound     = char.boundingBox.y.round - char.boundingBox.y
+        val moved      = char.boundingBox.moveBy(xTransform, yRound)
         IndigoLogger.info(
-          s"SCREEN CHANGE: PREVIOUS (${char.boundingBox} to ${char.boundingBox.moveBy(platform.columnCount, 0d)})"
+          s"SCREEN CHANGE: PREVIOUS (${char.boundingBox} to $moved)"
         )
-        ScreenChange.Previous -> PlayerCharacter(
-          char.copy(boundingBox = char.boundingBox.moveBy(platform.columnCount, 0d))
-        )
+        ScreenChange.Previous -> PlayerCharacter(char.copy(boundingBox = moved))
       else if (char.boundingBox.x > (platform.columnCount))
-        IndigoLogger
-          .info(s"SCREEN CHANGE: NEXT (${char.boundingBox} to ${char.boundingBox.moveBy(-platform.columnCount, 0d)})")
-        ScreenChange.Next -> PlayerCharacter(
-          char.copy(boundingBox = char.boundingBox.moveBy(-platform.columnCount, 0d))
+        val xTransform = -platform.columnCount.toDouble
+        val yRound     = char.boundingBox.y.round - char.boundingBox.y
+        val moved      = char.boundingBox.moveBy(xTransform, yRound)
+        IndigoLogger.info(
+          s"SCREEN CHANGE: PREVIOUS (${char.boundingBox} to $moved)"
         )
+        ScreenChange.Next -> PlayerCharacter(char.copy(boundingBox = moved))
       else ScreenChange.Remain -> PlayerCharacter(char)
     }
 }
