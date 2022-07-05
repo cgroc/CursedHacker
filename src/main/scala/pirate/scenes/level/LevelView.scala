@@ -143,8 +143,7 @@ object LevelView {
             )
           else Layer.empty
         )
-        .addLayer {
-          IndigoLogger.info(s"${gameTime.running}, ${gameTime.running - character.lastSpoke}")
+        .addLayer(
           if (
             character.lastSpoke != Seconds.zero && (gameTime.running - character.lastSpoke).toInt < Constants.MagicNumbers.speechDurationSeconds
           )
@@ -159,7 +158,7 @@ object LevelView {
               ).alignCenter
             )
           else Layer.empty
-        }
+        )
     // .withCamera {
     //  import IndigoLogger._
     //  val at = MagicNumbers.modelPointScaledToView(pirate.center).toPoint - Point(720, 180)
