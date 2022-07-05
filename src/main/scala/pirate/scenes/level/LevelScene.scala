@@ -56,7 +56,8 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
               Map(
                 Screen.Zero -> List(ItvCharacter.otherItvCharacter(CharacterName.Dougie, Vertex(7d, 0d))),
                 Screen.One  -> List(ItvCharacter.otherItvCharacter(CharacterName.Maya, Vertex(10d, 0d))),
-                Screen.Two  -> List(ItvCharacter.otherItvCharacter(CharacterName.Shah, Vertex(8d, 0d)))
+                Screen.Two  -> List(ItvCharacter.otherItvCharacter(CharacterName.Shah, Vertex(8d, 0d))),
+                Screen.Three  ->List(ItvCharacter.otherItvCharacter(CharacterName.Pere, Vertex(10d, 0d))),
               ),
               Platform.fromTerrainMap(levelDataStore.terrainMap)
             )

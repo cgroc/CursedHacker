@@ -10,6 +10,7 @@ object Constants {
     case Dave   extends CharacterName
     case Dougie extends CharacterName
     case Maya   extends CharacterName
+    case Pere   extends CharacterName
     case Shah   extends CharacterName
 
   object Debug {
