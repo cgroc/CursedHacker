@@ -1,10 +1,11 @@
 package pirate.scenes.level.model
 
 import indigo.*
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.Vertex
+import indigoextras.geometry.{BoundingBox, LineSegment, Vertex}
+import indigoextras.geometry.BoundingBox.toLineSegments
 import pirate.core.Assets
 import pirate.core.Constants.CharacterName
+import pirate.scenes.level.model.ItvCharacter.Action
 
 /** Based off the original pirate. This thing is collidable, and can fall, and may or may not be controlled by the
   * input.
@@ -13,7 +14,7 @@ final case class ItvCharacter(
     boundingBox: BoundingBox,
     state: CharacterState,
     lastRespawn: Seconds,
-    ySpeed: Double,
+    lastYSpeed: Double,
     useInput: Boolean,
     name: CharacterName,
     respawnPoint: Vertex
@@ -25,29 +26,34 @@ final case class ItvCharacter(
 
   val center: Vertex = boundingBox.center
 
-  def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[ItvCharacter] = {
+  def update(
+      gameTime: GameTime,
+      commands: Set[Action],
+      platform: Platform,
+      otherCharacters: List[ItvCharacter]
+  ): Outcome[ItvCharacter] = {
     import indigo.IndigoLogger._
-    val inputForce =
-      if (useInput) inputState.mapInputs(ItvCharacter.inputMappings(state.isFalling), Vector2.zero) else Vector2.zero
+    import ItvCharacter.Action._
 
-    val (nextBounds, collision) =
-      ItvCharacter.adjustOnCollision(
-        platform,
-        boundingBox.moveBy(
-          Vertex(inputForce.x, ySpeed) * gameTime.delta.toDouble
-        )
-      )
+    val collisionBounds = platform.copy(navMesh = platform.navMesh ::: otherCharacters.map(_.boundingBox))
 
-    val ySpeedNext: Double =
-      ItvCharacter.decideNextSpeedY(state.inMidAir, boundingBox.y, nextBounds.y, ySpeed, inputForce.y)
+    val actions = if (useInput) commands else Set.empty
 
-    val nextState =
-      ItvCharacter.nextStateFromForceDiff(
-        state,
-        collision,
-        boundingBox.position.toVector2,
-        nextBounds.position.toVector2
-      )
+    val xMove: Double = {
+      val dir           = if (actions.movesRight) 1.0d else if (actions.movesLeft) -1.0d else 0.0d
+      val speed         = if (state.inMidAir) 2d else 3d
+      val inputX        = dir * speed
+      val movedXAttempt = boundingBox.moveBy(inputX * gameTime.delta.toDouble, 0)
+      if (collisionBounds.hitTest(movedXAttempt).isDefined) inputX * -0.1d else inputX
+    }
+
+    val jump           = actions.jumps && !state.inMidAir
+    val ySpeed: Double = ItvCharacter.decideNextSpeedY(lastYSpeed, jump)
+
+    val proposedBounds = boundingBox.moveBy(Vertex(xMove, ySpeed) * gameTime.delta.toDouble)
+    val nextBounds     = ItvCharacter.adjustOnCollision(collisionBounds, proposedBounds)
+
+    val nextState = ItvCharacter.nextStateFromLocationDiff(state, boundingBox.position, nextBounds.position)
 
     // Respawn if the pirate is below the bottom of the map.
     if (nextBounds.y > platform.rowCount.toDouble + 1)
@@ -57,7 +63,7 @@ final case class ItvCharacter(
           boundingBox = nextBounds.moveTo(respawnPoint),
           state = nextState,
           lastRespawn = gameTime.running,
-          ySpeed = ySpeedNext
+          lastYSpeed = 0
         )
       )
         .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
@@ -68,13 +74,45 @@ final case class ItvCharacter(
         else Nil
 
       consoleLog(s"States: $state - $nextState")
-      Outcome(copy(boundingBox = nextBounds, state = nextState, lastRespawn = lastRespawn, ySpeed = ySpeedNext))
+      Outcome(
+        copy(
+          boundingBox = nextBounds,
+          state = nextState,
+          lastRespawn = lastRespawn,
+          lastYSpeed = (nextBounds.y - boundingBox.y) / gameTime.delta.toDouble
+        )
+      )
         .addGlobalEvents(maybeJumpSound)
     }
   }
 }
 
 object ItvCharacter {
+
+  enum Action:
+    case Jump      extends Action
+    case MoveRight extends Action
+    case MoveLeft  extends Action
+
+  object Action {
+    extension (actions: Set[Action]) {
+      def jumps: Boolean      = actions.contains(Action.Jump)
+      def movesRight: Boolean = actions.contains(Action.MoveRight) && !actions.contains(Action.MoveLeft)
+      def movesLeft: Boolean  = actions.contains(Action.MoveLeft) && !actions.contains(Action.MoveRight)
+    }
+  }
+
+  val inputMappings: InputMapping[Set[Action]] =
+    InputMapping(
+      Combo.withKeyInputs(Key.LEFT_ARROW, Key.UP_ARROW)  -> Set(Action.MoveLeft, Action.Jump),
+      Combo.withKeyInputs(Key.LEFT_ARROW, Key.SPACE)     -> Set(Action.MoveLeft, Action.Jump),
+      Combo.withKeyInputs(Key.LEFT_ARROW)                -> Set(Action.MoveLeft),
+      Combo.withKeyInputs(Key.RIGHT_ARROW, Key.UP_ARROW) -> Set(Action.MoveRight, Action.Jump),
+      Combo.withKeyInputs(Key.RIGHT_ARROW, Key.SPACE)    -> Set(Action.MoveRight, Action.Jump),
+      Combo.withKeyInputs(Key.RIGHT_ARROW)               -> Set(Action.MoveRight),
+      Combo.withKeyInputs(Key.UP_ARROW)                  -> Set(Action.Jump),
+      Combo.withKeyInputs(Key.SPACE)                     -> Set(Action.Jump)
+    )
 
   // The model space is 1 unit per tile, a tile is 32 x 32.
   // I am deciding that all our sprites are a square the same size as a tile.
@@ -84,7 +122,7 @@ object ItvCharacter {
 
   def initialDave: ItvCharacter =
     ItvCharacter(
-      BoundingBox(Vertex(1.0, 0.0), size),
+      BoundingBox(Vertex(1.0d, 0.0d), size),
       CharacterState.FallingRight,
       Seconds.zero,
       0,
@@ -106,89 +144,51 @@ object ItvCharacter {
       startingPosition
     )
 
-  val inputMappings: Boolean => InputMapping[Vector2] = isFalling => {
-    val xSpeed: Double = if (isFalling) 2.0d else 3.0d
-    val ySpeed: Double = if (isFalling) 0.0d else -8.0d
-
-    InputMapping(
-      Combo.withKeyInputs(Key.LEFT_ARROW, Key.UP_ARROW)  -> Vector2(-xSpeed, ySpeed),
-      Combo.withKeyInputs(Key.LEFT_ARROW, Key.SPACE)     -> Vector2(-xSpeed, ySpeed),
-      Combo.withKeyInputs(Key.LEFT_ARROW)                -> Vector2(-xSpeed, 0.0d),
-      Combo.withKeyInputs(Key.RIGHT_ARROW, Key.UP_ARROW) -> Vector2(xSpeed, ySpeed),
-      Combo.withKeyInputs(Key.RIGHT_ARROW, Key.SPACE)    -> Vector2(xSpeed, ySpeed),
-      Combo.withKeyInputs(Key.RIGHT_ARROW)               -> Vector2(xSpeed, 0.0d),
-      Combo.withKeyInputs(Key.UP_ARROW)                  -> Vector2(0.0d, ySpeed),
-      Combo.withKeyInputs(Key.SPACE)                     -> Vector2(0.0d, ySpeed),
-      Combo.withGamepadInputs(
-        GamepadInput.LEFT_ANALOG(_ < -0.5, _ => true, false),
-        GamepadInput.Cross
-      )                                                                             -> Vector2(-xSpeed, ySpeed),
-      Combo.withGamepadInputs(GamepadInput.LEFT_ANALOG(_ < -0.5, _ => true, false)) -> Vector2(-xSpeed, 0.0d),
-      Combo.withGamepadInputs(
-        GamepadInput.LEFT_ANALOG(_ > 0.5, _ => true, false),
-        GamepadInput.Cross
-      )                                                                            -> Vector2(xSpeed, ySpeed),
-      Combo.withGamepadInputs(GamepadInput.LEFT_ANALOG(_ > 0.5, _ => true, false)) -> Vector2(xSpeed, 0.0d),
-      Combo.withGamepadInputs(GamepadInput.Cross)                                  -> Vector2(0.0d, ySpeed)
-    )
-  }
-
   given CanEqual[Option[BoundingBox], Option[BoundingBox]] = CanEqual.derived
 
   /*
   Very important: only considers y.
   So the pirate only falls or doesn't fall, no bumping into things
    */
-  def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): (BoundingBox, Boolean) = {
+  def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): BoundingBox = {
 
     import indigo.IndigoLogger._
-    // consoleLog(
-    //  s"Checking collision with proposedBounds of h: ${proposedBounds.height}, w: ${proposedBounds.width}, p: ${proposedBounds.position}"
-    // )
+    consoleLog(
+      s"Checking collision with proposedBounds of h: ${proposedBounds.height}, w: ${proposedBounds.width}, p: ${proposedBounds.position}"
+    )
     platform.hitTest(proposedBounds) match {
       case Some(value) =>
-        (
-          proposedBounds
-            .moveTo(proposedBounds.position.withY(value.y - proposedBounds.height)),
-          true
-        )
+        proposedBounds.moveTo(proposedBounds.position.withY(value.y - proposedBounds.height))
 
       case None =>
-        (proposedBounds, false)
+        proposedBounds
     }
   }
 
   val gravityIncrement: Double = 0.4d
+  val jumpSpeed: Double        = -8.0d
+  val terminalVelocity: Double = 8.0d
+  val maxVerticalSpeed: Double = jumpSpeed
 
   def decideNextSpeedY(
-      inMidAir: Boolean,
-      previousY: Double,
-      nextY: Double,
-      ySpeed: Double,
-      inputY: Double
+      previousYSpeed: Double,
+      jump: Boolean
   ): Double =
-    if (Math.abs(nextY - previousY) < 0.0001 && !inMidAir)
-      gravityIncrement + inputY
-    else if (ySpeed + gravityIncrement <= 8.0d)
-      ySpeed + gravityIncrement
-    else
-      8.0d
+    if (jump) jumpSpeed else Math.max(Math.min(previousYSpeed + gravityIncrement, terminalVelocity), maxVerticalSpeed)
 
-  def nextStateFromForceDiff(
+  def nextStateFromLocationDiff(
       previousState: CharacterState,
-      collisionOccurred: Boolean,
-      oldForce: Vector2,
-      newForce: Vector2
+      oldLocation: Vertex,
+      newLocation: Vertex
   ): CharacterState = {
-    val forceDiff = newForce - oldForce
+    val locationDiff = newLocation - oldLocation
 
-    if (forceDiff.y > -0.001 && forceDiff.y < 0.001 && collisionOccurred)
-      nextStanding(forceDiff.x)
-    else if (newForce.y > oldForce.y)
-      nextFalling(previousState)(forceDiff.x)
+    if (locationDiff.y > -0.001 && locationDiff.y < 0.001)
+      nextStanding(locationDiff.x)
+    else if (newLocation.y > oldLocation.y)
+      nextFalling(previousState)(locationDiff.x)
     else
-      nextJumping(previousState)(forceDiff.x)
-
+      nextJumping(previousState)(locationDiff.x)
   }
 
   private def nextStateFromDiffX(

@@ -23,6 +23,19 @@ object LevelView {
       levelDataStore: Option[LevelDataStore]
   ): SceneUpdateFragment =
     Level.draw(levelDataStore) |+|
+      (if (Constants.Debug.drawTerrainBoxes)
+         SceneUpdateFragment.empty.addLayer(
+           Layer(
+             model.platform.navMesh.map { box =>
+               Shape.Box(
+                 Constants.MagicNumbers.modelBoxScaledToView(box),
+                 Fill.None,
+                 Stroke(1, RGBA.Green)
+               )
+             }
+           )
+         )
+       else SceneUpdateFragment.empty) |+|
       model.characters
         .map { character =>
           CharacterDrawer.draw(

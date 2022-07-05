@@ -5,6 +5,7 @@ import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 
 object Constants {
+  inline val frameRate = 60
   enum CharacterName:
     case Dave   extends CharacterName
     case Dougie extends CharacterName
@@ -13,6 +14,7 @@ object Constants {
   object Debug {
     // Do you want a red box highlighting the bounding box of each character
     inline val drawCharacterBoxes = true
+    inline val drawTerrainBoxes   = true
   }
 
   object MagicNumbers {

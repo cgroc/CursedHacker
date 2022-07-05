@@ -45,11 +45,9 @@ object InitialLoad {
         maybeLds
       )) match {
         case Left(message) =>
-          IndigoLogger.consoleLog(s"ERROR STARTING $message")
           Startup.Failure(message)
 
         case Right(success) =>
-          IndigoLogger.consoleLog(s"HAPPY STARTING $success")
           success
       }
     )
