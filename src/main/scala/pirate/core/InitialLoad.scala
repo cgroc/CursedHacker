@@ -179,9 +179,12 @@ object InitialLoad {
             )
             .toMap,
           levelDataStore = levelDataStore.map(_._1),
-          screenData = LevelModel.Screen.all
-            .map(x => x -> ScreenData(Material.Bitmap(Assets.Static.backgroundRef)))
-            .toMap
+          screenData = Map(
+            LevelModel.Screen.Zero  -> ScreenData(Material.Bitmap(Assets.Static.backgroundRef)),
+            LevelModel.Screen.One   -> ScreenData(Material.Bitmap(Assets.Static.background3Ref)),
+            LevelModel.Screen.Two   -> ScreenData(Material.Bitmap(Assets.Static.background4Ref)),
+            LevelModel.Screen.Three -> ScreenData(Material.Bitmap(Assets.Static.background5Ref))
+          )
         )
       )
       .addAnimations(spritesByName.values.toList.map(_.animations))

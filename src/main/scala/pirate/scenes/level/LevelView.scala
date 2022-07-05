@@ -23,7 +23,7 @@ object LevelView {
       levelDataStore: Option[LevelDataStore],
       backgroundPerScreen: Map[LevelModel.Screen, ScreenData]
   ): SceneUpdateFragment =
-    Level.draw(levelDataStore, backgroundPerScreen(model.currentScreen).background) |+|
+    Level.draw(levelDataStore, backgroundPerScreen(model.currentScreen)) |+|
       (if (Constants.Debug.drawTerrainBoxes)
          SceneUpdateFragment.empty.addLayer(
            Layer(
@@ -57,14 +57,14 @@ object LevelView {
 
   object Level {
 
-    def draw(levelDataStore: Option[LevelDataStore], backGroundBitmap: Material.Bitmap): SceneUpdateFragment =
+    def draw(levelDataStore: Option[LevelDataStore], screenData: ScreenData): SceneUpdateFragment =
       levelDataStore
         .map { assets =>
           SceneUpdateFragment.empty
             .addLayer(
               Layer(
                 BindingKey("background"),
-                List(Graphic(Rectangle(0, 0, 640, 360), 50, backGroundBitmap)) ++
+                List(Graphic(Rectangle(0, 0, 640, 360), 50, screenData.background)) ++
                   drawWater(assets.waterReflections)
               )
             )
