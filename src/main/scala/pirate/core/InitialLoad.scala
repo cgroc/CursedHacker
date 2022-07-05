@@ -36,22 +36,22 @@ object InitialLoad {
         dougie   <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.dougieRef, Depth(2))
         maya     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.mayaRef, Depth(2))
         pere     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.pereRef, Depth(2))
+        shah     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.shahRef, Depth(2))
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
       } yield makeStartupData(
         Map(
           Constants.CharacterName.Dave   -> dave,
           Constants.CharacterName.Dougie -> dougie,
-          Constants.CharacterName.Maya -> maya,
-          Constants.CharacterName.Pere -> pere,
+          Constants.CharacterName.Maya   -> maya,
+          Constants.CharacterName.Shah   -> shah,
+          Constants.CharacterName.Pere   -> pere
         ),
         maybeLds
       )) match {
         case Left(message) =>
-          IndigoLogger.consoleLog(s"ERROR STARTING $message")
           Startup.Failure(message)
 
         case Right(success) =>
-          IndigoLogger.consoleLog(s"HAPPY STARTING $success")
           success
       }
     )
@@ -93,7 +93,7 @@ object InitialLoad {
           tileMap      <- Json.tiledMapFromJson(json)
           terrainGroup <- tileMap.toGroup(Assets.Static.terrainRef)
           grid         <- tileMap.toGrid(tileMapper)
-        } yield (grid -> terrainGroup.withDepth(Depth(4)))
+        } yield grid -> terrainGroup.withDepth(Depth(4))
 
       for {
         helm        <- loader(Assets.Helm.jsonRef, Assets.Helm.ref, Depth(9))

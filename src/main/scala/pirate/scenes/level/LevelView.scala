@@ -23,7 +23,20 @@ object LevelView {
       levelDataStore: Option[LevelDataStore]
   ): SceneUpdateFragment =
     Level.draw(levelDataStore) |+|
-      model.characters
+      (if (Constants.Debug.drawTerrainBoxes)
+         SceneUpdateFragment.empty.addLayer(
+           Layer(
+             model.platform.navMesh.map { box =>
+               Shape.Box(
+                 Constants.MagicNumbers.modelBoxScaledToView(box),
+                 Fill.None,
+                 Stroke(1, RGBA.Green)
+               )
+             }
+           )
+         )
+       else SceneUpdateFragment.empty) |+|
+      (model.dave.character +: model.currentCharacters)
         .map { character =>
           CharacterDrawer.draw(
             gameTime,
@@ -83,11 +96,11 @@ object LevelView {
         assets.itv.play(),
         Assets.Trees.tallTrunkGraphic.moveTo(420, 204),
         Assets.Trees.leftLeaningTrunkGraphic.moveTo(100, 254),
-        Assets.Trees.rightLeaningTrunkGraphic.moveTo(25, 134),
+        Assets.Trees.rightLeaningTrunkGraphic.moveTo(25, 166),
         assets.backTallPalm.moveTo(420, 194).changeCycle(CycleLabel("P Back")).play(),
         assets.palm.moveTo(397, 172).play(),
         assets.palm.moveTo(77, 219).play(),
-        assets.palm.moveTo(37, 88).play(),
+        assets.palm.moveTo(37, 120).play(),
         Assets.Static.chestGraphic.moveTo(380, 256),
         assets.terrain
       )

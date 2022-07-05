@@ -5,7 +5,7 @@ import indigo.scenes._
 import indigoextras.subsystems.FPSCounter
 import pirate.scenes.loading.LoadingScene
 import pirate.scenes.level.LevelScene
-import pirate.core.{Model, ViewModel}
+import pirate.core.{Constants, Model, ViewModel}
 
 import pirate.core.{Assets, InitialLoad, StartupData}
 
@@ -53,7 +53,7 @@ object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, 
         GameConfig.default
           .withViewport(GameViewport.at720p)
           .withMagnification(2)
-          .withFrameRateLimit(15)
+          .withFrameRateLimit(Constants.frameRate)
 
       BootResult(
         config,

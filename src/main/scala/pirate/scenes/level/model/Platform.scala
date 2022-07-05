@@ -31,8 +31,8 @@ Almost the same, but a different level of explicit precision.
 
 So in this case, the nav mesh is a bunch of bounding boxes that
 we can perform collision checks against.
-*/
-final case class Platform(navMesh: List[BoundingBox], rowCount: Int) {
+ */
+final case class Platform(navMesh: List[BoundingBox], rowCount: Int, columnCount: Int) {
 
   def hitTest(bounds: BoundingBox): Option[BoundingBox] =
     navMesh.find(_.overlaps(bounds))
@@ -51,28 +51,33 @@ object Platform {
 
     Platform(
       toNavMesh(layer),
-      terrainMap.layers.head.rowCount
+      terrainMap.layers.head.rowCount,
+      terrainMap.layers.head.columnCount
     )
   }
 
+  /** Was filtering things such that you can jump up through floors. But that was filtering out the wall I wanted to
+    * have on the right hand side.
+    */
   val filterPlatformTiles: List[TiledGridCell[TileType]] => List[TiledGridCell[TileType]] =
-    tiles =>
-      tiles
-        .filter { cell =>
-          cell.tile match {
-            case TileType.Solid if cell.row != 0 =>
-              tiles.find(t => t.column == cell.column && t.row == cell.row - 1) match {
-                case Some(TiledGridCell(_, _, TileType.Empty)) =>
-                  true
-
-                case _ =>
-                  false
-              }
-
-            case _ =>
-              false
-          }
-        }
+    tiles => tiles.filter(_.tile == TileType.Solid)
+//    tiles =>
+//      tiles
+//        .filter { cell =>
+//          cell.tile match {
+//            case TileType.Solid if cell.row != 0 =>
+//              tiles.find(t => t.column == cell.column && t.row == cell.row - 1) match {
+//                case Some(TiledGridCell(_, _, TileType.Empty)) =>
+//                  true
+//
+//                case _ =>
+//                  false
+//              }
+//
+//            case _ =>
+//              false
+//          }
+//        }
 
   val convertCellsToBoundingBoxes: List[TiledGridCell[TileType]] => List[BoundingBox] =
     _.flatMap { t =>
