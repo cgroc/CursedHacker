@@ -95,7 +95,7 @@ object Assets {
 //    val jsonRef: AssetName = AssetName("Captain Clown Nose JSON")
 
     val ref: AssetName       = AssetName("bouncydave")
-    val danRef: AssetName    = AssetName("bouncydan")
+    val danRef: AssetName    = AssetName("bouncydanglitch")
     val dougieRef: AssetName = AssetName("bouncydougie")
     val mayaRef: AssetName   = AssetName("bouncymaya")
     val shahRef: AssetName   = AssetName("bouncyShah")
