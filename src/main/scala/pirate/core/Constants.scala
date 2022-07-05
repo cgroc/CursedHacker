@@ -13,6 +13,7 @@ object Constants {
   object Debug {
     // Do you want a red box highlighting the bounding box of each character
     inline val drawCharacterBoxes = true
+    inline val drawTerrainBoxes   = true
   }
 
   object MagicNumbers {

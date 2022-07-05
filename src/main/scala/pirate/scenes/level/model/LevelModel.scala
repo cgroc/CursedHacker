@@ -24,9 +24,11 @@ object LevelModel {
   final case class Ready(characters: List[ItvCharacter], platform: Platform) extends LevelModel {
     val notReady: Boolean = false
 
-    def update(gameTime: GameTime, inputState: InputState): Outcome[Ready] =
+    def update(gameTime: GameTime, inputState: InputState): Outcome[Ready] = {
+      val actions = inputState.mapInputs(ItvCharacter.inputMappings, Set.empty)
       Outcome
-        .sequence(characters.map(_.update(gameTime, inputState, platform)))
+        .sequence(characters.map(c => c.update(gameTime, actions, platform, characters.filterNot(_ == c))))
         .map(c => this.copy(characters = c))
+    }
   }
 }

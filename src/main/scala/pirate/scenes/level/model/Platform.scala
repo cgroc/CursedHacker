@@ -47,7 +47,7 @@ object Platform {
     def toNavMesh: List[TiledGridCell[TileType]] => List[BoundingBox] =
       filterPlatformTiles andThen
         convertCellsToBoundingBoxes andThen
-        weldBoundingBoxes
+        identity /*weldBoundingBoxes*/
 
     Platform(
       toNavMesh(layer),

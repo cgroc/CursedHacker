@@ -5,6 +5,7 @@ import indigoextras.geometry.{BoundingBox, LineSegment, Vertex}
 import indigoextras.geometry.BoundingBox.toLineSegments
 import pirate.core.Assets
 import pirate.core.Constants.CharacterName
+import pirate.scenes.level.model.ItvCharacter.Action
 
 /** Based off the original pirate. This thing is collidable, and can fall, and may or may not be controlled by the
   * input.
@@ -13,7 +14,7 @@ final case class ItvCharacter(
     boundingBox: BoundingBox,
     state: CharacterState,
     lastRespawn: Seconds,
-    yDelta: Double,
+    lastYSpeed: Double,
     useInput: Boolean,
     name: CharacterName,
     respawnPoint: Vertex
@@ -25,40 +26,32 @@ final case class ItvCharacter(
 
   val center: Vertex = boundingBox.center
 
-  /** At the moment this goes:
-    *   - calculate a desired movement vector based on the user input and whether he's falling
-    *   - attempt to move him by the X of this movement vector (because you can only control the X movement directly)
-    *     and current Y speed
-    *   - if he's inside something, move to be above the thing
-    *   - some logic to figure out the y speed, which includes gravity, the previous position, god knows
-    *   - calculate the next state (idle, falling, walking, jumping) based off the change in position
-    *
-    * How about instead:
-    *   - do x and y separately.
-    *   - x is simple - you try and move, if you'll end up inside something, you aren't allowed, so no x movement
-    *   - y is more complicated - if you're not in midair, and you jump, you get an instant y boost
-    *   - then we calculate the next y speed, which has some fun gravity effect
-    */
-  def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[ItvCharacter] = {
+  def update(
+      gameTime: GameTime,
+      commands: Set[Action],
+      platform: Platform,
+      otherCharacters: List[ItvCharacter]
+  ): Outcome[ItvCharacter] = {
     import indigo.IndigoLogger._
     import ItvCharacter.Action._
 
-    val actions = if (useInput) inputState.mapInputs(ItvCharacter.inputMappings, Set.empty) else Set.empty
+    val collisionBounds = platform.copy(navMesh = platform.navMesh ::: otherCharacters.map(_.boundingBox))
 
-    val inputX: Double = {
-      val dir   = if (actions.movesRight) 1.0d else if (actions.movesLeft) -1.0d else 0.0d
-      val speed = if (state.inMidAir) 2d else 3d
-      dir * speed
+    val actions = if (useInput) commands else Set.empty
+
+    val xMove: Double = {
+      val dir           = if (actions.movesRight) 1.0d else if (actions.movesLeft) -1.0d else 0.0d
+      val speed         = if (state.inMidAir) 2d else 3d
+      val inputX        = dir * speed
+      val movedXAttempt = boundingBox.moveBy(inputX * gameTime.delta.toDouble, 0)
+      if (collisionBounds.hitTest(movedXAttempt).isDefined) inputX * -0.1d else inputX
     }
 
-    val movedXAttempt = boundingBox.moveBy(inputX * gameTime.delta.toDouble, 0)
-    val xMove         = if (platform.hitTest(movedXAttempt).isDefined) 0d else inputX
-
     val jump           = actions.jumps && !state.inMidAir
-    val ySpeed: Double = ItvCharacter.decideNextSpeedY(previousYSpeed = yDelta / gameTime.delta.toDouble, jump)
+    val ySpeed: Double = ItvCharacter.decideNextSpeedY(lastYSpeed, jump)
 
     val proposedBounds = boundingBox.moveBy(Vertex(xMove, ySpeed) * gameTime.delta.toDouble)
-    val nextBounds     = ItvCharacter.adjustOnCollision(platform, proposedBounds)
+    val nextBounds     = ItvCharacter.adjustOnCollision(collisionBounds, proposedBounds)
 
     val nextState = ItvCharacter.nextStateFromLocationDiff(state, boundingBox.position, nextBounds.position)
 
@@ -70,7 +63,7 @@ final case class ItvCharacter(
           boundingBox = nextBounds.moveTo(respawnPoint),
           state = nextState,
           lastRespawn = gameTime.running,
-          yDelta = 0
+          lastYSpeed = 0
         )
       )
         .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
@@ -86,7 +79,7 @@ final case class ItvCharacter(
           boundingBox = nextBounds,
           state = nextState,
           lastRespawn = lastRespawn,
-          yDelta = nextBounds.y - boundingBox.y
+          lastYSpeed = (nextBounds.y - boundingBox.y) / gameTime.delta.toDouble
         )
       )
         .addGlobalEvents(maybeJumpSound)
@@ -172,96 +165,16 @@ object ItvCharacter {
     }
   }
 
-  /** For each thing you collide with, work out the vector to move you OUT of that thing. This will almost certainly
-    * break down in hilarious ways if you have multiple corners inside.
-    *
-    * In fact if I allow attempted X movement it already breaks down and throws you out the top of the world, but hey
-    * Calls itself recursively so that you can't get stuck in walls (in theory)
-    */
-  def mattsDraftCollision(platform: Platform, proposedBounds: BoundingBox): BoundingBox = {
-    import indigo.IndigoLogger._
-    def desc(boundingBox: BoundingBox): String =
-      boundingBox.corners.map(p => s"(${p.x},${p.y})").mkString("(", ",", ")")
-
-    // consoleLog(s"Checking collision with proposedBounds of: ${desc(proposedBounds)}")
-
-    extension (line: LineSegment) {
-      def customClosestPointOnLine(to: Vertex): Option[Vertex] = {
-
-        /** I think I've found a bug in Indigo: LineSegment.closestPointOnLine uses Vertex#clamp But this doesn't
-          * account for the fact that min.x might be greater than max.x, even while min.y might be less than max.y. This
-          * causes cases where: testLine.closestPointOnLine(testPoint) != testLine.invert.closestPointOnLine(testPoint)
-          * I'm not sure if it's wrong for Vertex#clamp to not check the max and mins, or LineSegment#closestPointOnLine
-          * to call it without checking
-          */
-        def customClamp(vertex: Vertex, min: Vertex, max: Vertex): Vertex = {
-          import vertex.{x, y}
-          val minX = Math.min(min.x, max.x)
-          val miny = Math.min(min.y, max.y)
-          val maxX = Math.max(min.x, max.x)
-          val maxY = Math.max(min.y, max.y)
-          Vertex(
-            x = Math.min(maxX, Math.max(minX, x)),
-            y = Math.min(maxY, Math.max(miny, y))
-          )
-        }
-        import line._
-        val a   = end.y - start.y
-        val b   = start.x - end.x
-        val c1  = a * start.x + b * start.y
-        val c2  = -b * to.x + a * to.y
-        val det = a * a - -b * b
-        if det != 0.0 then
-          Some(
-            customClamp(
-              Vertex(
-                x = (a * c1 - b * c2) / det,
-                y = (a * c2 - -b * c1) / det
-              ),
-              start,
-              end
-            )
-          )
-        else None
-      }
-    }
-
-    platform
-      .hitTest(proposedBounds) match
-      case Some(obj) =>
-        consoleLog(s"Collided with ${desc(obj)}")
-        val newBounds = proposedBounds.corners
-          .find(obj.contains) // find YOUR corner which is overlapping
-          .map(corner =>
-            corner -> {
-              val nearestEdge = obj.toLineSegments
-                .filterNot(_.customClosestPointOnLine(corner).map(_.distanceTo(corner).abs).contains(0.0d))
-                .minBy(_.customClosestPointOnLine(corner).map(_.distanceTo(corner).abs))
-              consoleLog(s"Colliding corner was $corner")
-              consoleLog(s"Nearest edge was $nearestEdge")
-              val nearestPoint = nearestEdge.customClosestPointOnLine(corner)
-              consoleLog(s"Nearest point was $nearestPoint")
-              nearestPoint.getOrElse(corner)
-            } // find the nearest corner to your overlapping corner
-          )
-          .map { case (me, edgePoint) => (edgePoint - me).toVector2 } // find the difference between them
-          .foldLeft(proposedBounds) { (box, vector) => // move it out
-            val r = box.moveBy(vector)
-            consoleLog(s"Moved ${desc(box)} by $vector to ${desc(r)}")
-            r
-          }
-        adjustOnCollision(platform, newBounds)
-      case None => proposedBounds
-  }
-
   val gravityIncrement: Double = 0.4d
   val jumpSpeed: Double        = -8.0d
+  val terminalVelocity: Double = 8.0d
+  val maxVerticalSpeed: Double = jumpSpeed
 
   def decideNextSpeedY(
       previousYSpeed: Double,
       jump: Boolean
   ): Double =
-    if (jump) jumpSpeed else Math.min(previousYSpeed + gravityIncrement, 8.0d)
+    if (jump) jumpSpeed else Math.max(Math.min(previousYSpeed + gravityIncrement, terminalVelocity), maxVerticalSpeed)
 
   def nextStateFromLocationDiff(
       previousState: CharacterState,
