@@ -4,6 +4,7 @@ import indigo.*
 import pirate.core.{Assets, Constants, LevelDataStore}
 import indigoextras.geometry.{BoundingBox, Vertex}
 import pirate.core.Constants.CharacterName
+import pirate.core.Quotes
 import pirate.scenes.level.model.CharacterState
 import pirate.scenes.level.model.ItvCharacter
 import pirate.scenes.level.model.LevelModel
@@ -142,6 +143,23 @@ object LevelView {
             )
           else Layer.empty
         )
+        .addLayer {
+          IndigoLogger.info(s"${gameTime.running}, ${gameTime.running - character.lastSpoke}")
+          if (
+            character.lastSpoke != Seconds.zero && (gameTime.running - character.lastSpoke).toInt < Constants.MagicNumbers.speechDurationSeconds
+          )
+            Layer(
+              Text(
+                Quotes.get(character.name),
+                Constants.MagicNumbers.modelBoxScaledToView(character.boundingBox).center.x,
+                Constants.MagicNumbers.modelBoxScaledToView(character.boundingBox).center.y,
+                1,
+                Assets.Fonts.fontKey,
+                Assets.Fonts.fontMaterial
+              ).alignCenter
+            )
+          else Layer.empty
+        }
     // .withCamera {
     //  import IndigoLogger._
     //  val at = MagicNumbers.modelPointScaledToView(pirate.center).toPoint - Point(720, 180)

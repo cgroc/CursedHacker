@@ -15,7 +15,7 @@ final case class PlayerCharacter(character: ItvCharacter) {
       platform: Platform,
       otherCharacters: List[ItvCharacter]
   ): Outcome[(ScreenChange, PlayerCharacter)] =
-    character.update(gameTime, commands, platform, otherCharacters).map { char =>
+    character.update(gameTime, commands, platform, otherCharacters, None).map { char =>
       if (char.boundingBox.x < (0 - char.boundingBox.width))
         val xTransform = platform.columnCount.toDouble
         val yRound     = char.boundingBox.y.round - char.boundingBox.y
@@ -43,6 +43,7 @@ final case class ItvCharacter(
     boundingBox: BoundingBox,
     state: CharacterState,
     lastRespawn: Seconds,
+    lastSpoke: Seconds,
     lastYSpeed: Double,
     useInput: Boolean,
     name: CharacterName,
@@ -59,7 +60,8 @@ final case class ItvCharacter(
       gameTime: GameTime,
       commands: Set[Action],
       platform: Platform,
-      otherCharacters: List[ItvCharacter]
+      otherCharacters: List[ItvCharacter],
+      interactingCharacter: Option[CharacterName]
   ): Outcome[ItvCharacter] = {
     import indigo.IndigoLogger._
     import ItvCharacter.Action._
@@ -108,6 +110,7 @@ final case class ItvCharacter(
           boundingBox = nextBounds,
           state = nextState,
           lastRespawn = lastRespawn,
+          lastSpoke = if (interactingCharacter.contains(name)) gameTime.running else lastSpoke,
           lastYSpeed = (nextBounds.y - boundingBox.y) / gameTime.delta.toDouble
         )
       )
@@ -122,25 +125,25 @@ object ItvCharacter {
     case Jump      extends Action
     case MoveRight extends Action
     case MoveLeft  extends Action
+    case Interact  extends Action
 
   object Action {
     extension (actions: Set[Action]) {
       def jumps: Boolean      = actions.contains(Action.Jump)
       def movesRight: Boolean = actions.contains(Action.MoveRight) && !actions.contains(Action.MoveLeft)
       def movesLeft: Boolean  = actions.contains(Action.MoveLeft) && !actions.contains(Action.MoveRight)
+      def interacts: Boolean  = actions.contains(Action.Interact)
     }
   }
 
   val inputMappings: InputMapping[Set[Action]] =
     InputMapping(
       Combo.withKeyInputs(Key.LEFT_ARROW, Key.UP_ARROW)  -> Set(Action.MoveLeft, Action.Jump),
-      Combo.withKeyInputs(Key.LEFT_ARROW, Key.SPACE)     -> Set(Action.MoveLeft, Action.Jump),
       Combo.withKeyInputs(Key.LEFT_ARROW)                -> Set(Action.MoveLeft),
       Combo.withKeyInputs(Key.RIGHT_ARROW, Key.UP_ARROW) -> Set(Action.MoveRight, Action.Jump),
-      Combo.withKeyInputs(Key.RIGHT_ARROW, Key.SPACE)    -> Set(Action.MoveRight, Action.Jump),
       Combo.withKeyInputs(Key.RIGHT_ARROW)               -> Set(Action.MoveRight),
       Combo.withKeyInputs(Key.UP_ARROW)                  -> Set(Action.Jump),
-      Combo.withKeyInputs(Key.SPACE)                     -> Set(Action.Jump)
+      Combo.withKeyInputs(Key.SPACE)                     -> Set(Action.Interact)
     )
 
   // The model space is 1 unit per tile, a tile is 32 x 32.
@@ -153,6 +156,7 @@ object ItvCharacter {
     ItvCharacter(
       BoundingBox(Vertex(1.0d, 0.0d), size),
       CharacterState.FallingRight,
+      Seconds.zero,
       Seconds.zero,
       0,
       useInput = true,
@@ -167,6 +171,7 @@ object ItvCharacter {
     ItvCharacter(
       BoundingBox(startingPosition, size),
       CharacterState.FallingRight,
+      Seconds.zero,
       Seconds.zero,
       0,
       useInput = false,
