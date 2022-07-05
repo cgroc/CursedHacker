@@ -54,10 +54,10 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
               Screen.Zero,
               ItvCharacter.initialDave,
               Map(
-                Screen.Zero -> List(ItvCharacter.otherItvCharacter(CharacterName.Dougie, Vertex(7d, 0d))),
-                Screen.One  -> List(ItvCharacter.otherItvCharacter(CharacterName.Maya, Vertex(10d, 0d))),
-                Screen.Two  -> List(ItvCharacter.otherItvCharacter(CharacterName.Shah, Vertex(8d, 0d))),
-                Screen.Three  ->List(ItvCharacter.otherItvCharacter(CharacterName.Pere, Vertex(10d, 0d))),
+                Screen.Zero  -> List(ItvCharacter.otherItvCharacter(CharacterName.Dougie, Vertex(7d, 0d))),
+                Screen.One   -> List(ItvCharacter.otherItvCharacter(CharacterName.Maya, Vertex(10d, 0d))),
+                Screen.Two   -> List(ItvCharacter.otherItvCharacter(CharacterName.Shah, Vertex(8d, 0d))),
+                Screen.Three -> List(ItvCharacter.otherItvCharacter(CharacterName.Pere, Vertex(10d, 0d)))
               ),
               Platform.fromTerrainMap(levelDataStore.terrainMap)
             )
@@ -109,7 +109,14 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
     Outcome(
       (model, viewModel) match {
         case (m @ LevelModel.Ready(_, _, _, _), vm @ LevelViewModel.Ready(_)) =>
-          LevelView.draw(context.gameTime, m, vm, context.startUpData.spritesByName, context.startUpData.levelDataStore)
+          LevelView.draw(
+            context.gameTime,
+            m,
+            vm,
+            context.startUpData.spritesByName,
+            context.startUpData.levelDataStore,
+            context.startUpData.screenData
+          )
 
         case _ =>
           SceneUpdateFragment.empty

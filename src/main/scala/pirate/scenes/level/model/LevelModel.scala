@@ -35,6 +35,8 @@ object LevelModel {
       override def next: Screen = Screen.Zero
       override def prev: Screen = Screen.Two
     }
+
+    val all: Seq[Screen] = Seq(Zero, One, Two, Three)
   }
 
   enum ScreenChange:

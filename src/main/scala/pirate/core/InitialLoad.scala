@@ -5,6 +5,7 @@ import indigo.json.Json
 import indigo.shared.formats.TiledGridMap
 import pirate.core.Constants
 import pirate.core.Constants.CharacterName
+import pirate.scenes.level.model.LevelModel
 
 /*
 In a nutshell, the setup function here takes the boot data (screen dimensions),
@@ -170,14 +171,17 @@ object InitialLoad {
     Startup
       .Success(
         StartupData(
-          spritesByName.view
+          spritesByName = spritesByName.view
             .mapValues(
               _.sprite
                 .modifyMaterial(m => Material.ImageEffects(m.diffuse))
                 .scaleBy(Constants.MagicNumbers.bouncyDaveScaleFactor, Constants.MagicNumbers.bouncyDaveScaleFactor)
             )
             .toMap,
-          levelDataStore.map(_._1)
+          levelDataStore = levelDataStore.map(_._1),
+          screenData = LevelModel.Screen.all
+            .map(x => x -> ScreenData(Material.Bitmap(Assets.Static.backgroundRef)))
+            .toMap
         )
       )
       .addAnimations(spritesByName.values.toList.map(_.animations))
@@ -187,7 +191,8 @@ object InitialLoad {
 
 final case class StartupData(
     spritesByName: Map[CharacterName, Sprite[Material.ImageEffects]],
-    levelDataStore: Option[LevelDataStore]
+    levelDataStore: Option[LevelDataStore],
+    screenData: Map[LevelModel.Screen, ScreenData]
 )
 final case class LevelDataStore(
     waterReflections: Sprite[Material.Bitmap],
