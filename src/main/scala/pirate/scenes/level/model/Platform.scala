@@ -32,7 +32,7 @@ Almost the same, but a different level of explicit precision.
 So in this case, the nav mesh is a bunch of bounding boxes that
 we can perform collision checks against.
  */
-final case class Platform(navMesh: List[BoundingBox], rowCount: Int) {
+final case class Platform(navMesh: List[BoundingBox], rowCount: Int, columnCount: Int) {
 
   def hitTest(bounds: BoundingBox): Option[BoundingBox] =
     navMesh.find(_.overlaps(bounds))
@@ -51,7 +51,8 @@ object Platform {
 
     Platform(
       toNavMesh(layer),
-      terrainMap.layers.head.rowCount
+      terrainMap.layers.head.rowCount,
+      terrainMap.layers.head.columnCount
     )
   }
 

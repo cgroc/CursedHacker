@@ -10,6 +10,7 @@ import pirate.core.{StartupData, Model, ViewModel}
 import pirate.core.Constants.CharacterName
 import pirate.scenes.level.model.Platform
 import pirate.scenes.level.model.LevelModel
+import pirate.scenes.level.model.LevelModel.Screen
 import pirate.scenes.level.viewmodel.LevelViewModel
 import pirate.scenes.level.viewmodel.CharacterViewState
 import pirate.scenes.level.model.ItvCharacter
@@ -50,11 +51,12 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
         case (LevelModel.NotReady, Some(levelDataStore)) =>
           Outcome(
             LevelModel.Ready(
-              List(
-                ItvCharacter.initialDave,
-                ItvCharacter.otherItvCharacter(CharacterName.Dougie, Vertex(7d, 0d)),
-                ItvCharacter.otherItvCharacter(CharacterName.Maya, Vertex(10d, 0d)),
-                ItvCharacter.otherItvCharacter(CharacterName.Shah, Vertex(8d, 0d))
+              Screen.Zero,
+              ItvCharacter.initialDave,
+              Map(
+                Screen.Zero -> List(ItvCharacter.otherItvCharacter(CharacterName.Dougie, Vertex(7d, 0d))),
+                Screen.One  -> List(ItvCharacter.otherItvCharacter(CharacterName.Maya, Vertex(10d, 0d))),
+                Screen.Two  -> List(ItvCharacter.otherItvCharacter(CharacterName.Shah, Vertex(8d, 0d)))
               ),
               Platform.fromTerrainMap(levelDataStore.terrainMap)
             )
@@ -90,8 +92,8 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
         case LevelModel.NotReady =>
           Outcome(viewModel)
 
-        case LevelModel.Ready(characters, _) =>
-          viewModel.update(context.gameTime, characters)
+        case LevelModel.Ready(_, dave, characters, _) =>
+          viewModel.update(context.gameTime, dave.character +: characters.values.flatten.toList)
       }
 
     case _ =>
@@ -105,7 +107,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       (model, viewModel) match {
-        case (m @ LevelModel.Ready(_, _), vm @ LevelViewModel.Ready(_)) =>
+        case (m @ LevelModel.Ready(_, _, _, _), vm @ LevelViewModel.Ready(_)) =>
           LevelView.draw(context.gameTime, m, vm, context.startUpData.spritesByName, context.startUpData.levelDataStore)
 
         case _ =>

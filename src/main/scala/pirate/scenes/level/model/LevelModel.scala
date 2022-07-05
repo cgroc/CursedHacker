@@ -14,6 +14,30 @@ sealed trait LevelModel {
   def update(gameTime: GameTime, inputState: InputState): Outcome[LevelModel]
 }
 object LevelModel {
+  sealed trait Screen {
+    def next: Screen
+    def prev: Screen
+  }
+  object Screen {
+    case object Zero extends Screen {
+      override def next: Screen = Screen.One
+      override def prev: Screen = Screen.Two
+    }
+    case object One extends Screen {
+      override def next: Screen = Screen.Two
+      override def prev: Screen = Screen.Zero
+    }
+    case object Two extends Screen {
+      override def next: Screen = Screen.Zero
+      override def prev: Screen = Screen.One
+    }
+  }
+
+  enum ScreenChange:
+    case Next     extends ScreenChange
+    case Previous extends ScreenChange
+    case Remain   extends ScreenChange
+
   case object NotReady extends LevelModel {
     val notReady: Boolean = true
 
@@ -21,14 +45,41 @@ object LevelModel {
       Outcome(this)
   }
 
-  final case class Ready(characters: List[ItvCharacter], platform: Platform) extends LevelModel {
-    val notReady: Boolean = false
+  final case class Ready(
+      currentScreen: Screen,
+      dave: PlayerCharacter,
+      characters: Map[Screen, List[ItvCharacter]],
+      platform: Platform
+  ) extends LevelModel {
+    val notReady: Boolean                     = false
+    def currentCharacters: List[ItvCharacter] = characters.getOrElse(currentScreen, Nil)
 
     def update(gameTime: GameTime, inputState: InputState): Outcome[Ready] = {
       val actions = inputState.mapInputs(ItvCharacter.inputMappings, Set.empty)
-      Outcome
-        .sequence(characters.map(c => c.update(gameTime, actions, platform, characters.filterNot(_ == c))))
-        .map(c => this.copy(characters = c))
+
+      dave
+        .update(gameTime, actions, platform, currentCharacters)
+        .flatMap { case (nextScreen, newDave) =>
+          nextScreen match
+            case ScreenChange.Next =>
+              Outcome {
+                this.copy(dave = newDave, currentScreen = currentScreen.next)
+              }
+            case ScreenChange.Previous =>
+              Outcome {
+                this.copy(dave = newDave, currentScreen = currentScreen.prev)
+              }
+            case ScreenChange.Remain =>
+              Outcome
+                .sequence(
+                  currentCharacters
+                    .map(c =>
+                      c.update(gameTime, actions, platform, newDave.character +: currentCharacters.filterNot(_ == c))
+                    )
+                )
+                .map(c => this.copy(dave = newDave, characters = characters.updated(currentScreen, c)))
+        }
+
     }
   }
 }

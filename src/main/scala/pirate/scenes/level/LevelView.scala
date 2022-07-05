@@ -36,7 +36,7 @@ object LevelView {
            )
          )
        else SceneUpdateFragment.empty) |+|
-      model.characters
+      (model.dave.character +: model.currentCharacters)
         .map { character =>
           CharacterDrawer.draw(
             gameTime,
