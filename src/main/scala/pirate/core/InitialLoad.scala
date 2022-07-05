@@ -35,12 +35,14 @@ object InitialLoad {
         dave     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
         dougie   <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.dougieRef, Depth(2))
         maya     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.mayaRef, Depth(2))
+        pere     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.pereRef, Depth(2))
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
       } yield makeStartupData(
         Map(
           Constants.CharacterName.Dave   -> dave,
           Constants.CharacterName.Dougie -> dougie,
-          Constants.CharacterName.Maya -> maya
+          Constants.CharacterName.Maya -> maya,
+          Constants.CharacterName.Pere -> pere,
         ),
         maybeLds
       )) match {
