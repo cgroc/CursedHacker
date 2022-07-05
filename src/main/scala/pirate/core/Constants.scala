@@ -21,6 +21,8 @@ object Constants {
 
   object MagicNumbers {
 
+    inline val speechDurationSeconds = 5
+
     inline val tilesAcrossScreen = 20
 
     inline val aespriteSize = 224d

@@ -76,11 +76,21 @@ object LevelModel {
                 this.copy(dave = newDave, currentScreen = currentScreen.prev)
               }
             case ScreenChange.Remain =>
+              val interactingCharacter =
+                if (actions.interacts)
+                  currentCharacters.minByOption(_.center.distanceTo(dave.character.center)).map(_.name)
+                else None
               Outcome
                 .sequence(
                   currentCharacters
                     .map(c =>
-                      c.update(gameTime, actions, platform, newDave.character +: currentCharacters.filterNot(_ == c))
+                      c.update(
+                        gameTime,
+                        actions,
+                        platform,
+                        newDave.character +: currentCharacters.filterNot(_ == c),
+                        interactingCharacter
+                      )
                     )
                 )
                 .map(c => this.copy(dave = newDave, characters = characters.updated(currentScreen, c)))
