@@ -106,27 +106,28 @@ object Assets {
 
     val jsonRef: AssetName = AssetName("bouncydave JSON")
 
-    val ref: AssetName       = AssetName("bouncydave")
-    val danRef: AssetName    = AssetName("bouncydanglitch")
-    val dougieRef: AssetName = AssetName("bouncydougie")
-    val mayaRef: AssetName   = AssetName("bouncymaya")
-    val shahRef: AssetName   = AssetName("bouncyShah")
-    val pereRef: AssetName   = AssetName("bouncypere")
-    val leeRef: AssetName    = AssetName("bouncylee")
-    val milesRef: AssetName  = AssetName("bouncymiles")
-    val robRef: AssetName    = AssetName("bouncyrob")
-    val joshRef: AssetName   = AssetName("bouncyjosh")
-    val gokceRef: AssetName  = AssetName("bouncygokce")
-    val beckyRef: AssetName  = AssetName("bouncybecky")
-    val anneRef: AssetName   = AssetName("bouncyanne")
-    val lukeRef: AssetName   = AssetName("bouncyluke")
-    val aliRef: AssetName    = AssetName("bouncyali")
-    val bellaRef: AssetName  = AssetName("bouncybella")
-    val jamesRef: AssetName  = AssetName("bouncyjames")
-    val tobiasRef: AssetName = AssetName("bouncytobias")
-    val chloeRef: AssetName  = AssetName("bouncyChloe")
-    val chrisRef: AssetName  = AssetName("bouncyChris")
-    val adamRef: AssetName   = AssetName("bouncyAdam")
+    val ref: AssetName        = AssetName("bouncydave")
+    val danRef: AssetName     = AssetName("bouncydanglitch")
+    val dougieRef: AssetName  = AssetName("bouncydougie")
+    val mayaRef: AssetName    = AssetName("bouncymaya")
+    val shahRef: AssetName    = AssetName("bouncyShah")
+    val pereRef: AssetName    = AssetName("bouncypere")
+    val leeRef: AssetName     = AssetName("bouncylee")
+    val milesRef: AssetName   = AssetName("bouncymiles")
+    val robRef: AssetName     = AssetName("bouncyrob")
+    val joshRef: AssetName    = AssetName("bouncyjosh")
+    val gokceRef: AssetName   = AssetName("bouncygokce")
+    val beckyRef: AssetName   = AssetName("bouncybecky")
+    val anneRef: AssetName    = AssetName("bouncyanne")
+    val lukeRef: AssetName    = AssetName("bouncyluke")
+    val aliRef: AssetName     = AssetName("bouncyali")
+    val bellaRef: AssetName   = AssetName("bouncybella")
+    val jamesRef: AssetName   = AssetName("bouncyjames")
+    val tobiasRef: AssetName  = AssetName("bouncytobias")
+    val chloeRef: AssetName   = AssetName("bouncyChloe")
+    val chrisRef: AssetName   = AssetName("bouncyChris")
+    val adamRef: AssetName    = AssetName("bouncyAdam")
+    val waltonsRef: AssetName = AssetName("bouncyWaltons")
 
     def assets(baseUrl: String): Set[AssetType] =
       Set(
@@ -151,6 +152,7 @@ object Assets {
         AssetType.Image(Captain.chloeRef, AssetPath(baseUrl + "assets/" + Captain.chloeRef + ".png")),
         AssetType.Image(Captain.chrisRef, AssetPath(baseUrl + "assets/" + Captain.chrisRef + ".png")),
         AssetType.Image(Captain.adamRef, AssetPath(baseUrl + "assets/" + Captain.adamRef + ".png")),
+        AssetType.Image(Captain.waltonsRef, AssetPath(baseUrl + "assets/" + Captain.waltonsRef + ".png")),
         AssetType.Text(Captain.jsonRef, AssetPath(baseUrl + "assets/" + Captain.ref + ".json"))
       )
   }

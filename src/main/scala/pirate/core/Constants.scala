@@ -7,27 +7,28 @@ import indigoextras.geometry.Vertex
 object Constants {
   inline val frameRate = 60
   enum CharacterName:
-    case Dan    extends CharacterName
-    case Dave   extends CharacterName
-    case Dougie extends CharacterName
-    case Maya   extends CharacterName
-    case Pere   extends CharacterName
-    case Shah   extends CharacterName
-    case Lee    extends CharacterName
-    case Gokce  extends CharacterName
-    case Rob    extends CharacterName
-    case Josh   extends CharacterName
-    case Becky  extends CharacterName
-    case Miles  extends CharacterName
-    case Anne   extends CharacterName
-    case Luke   extends CharacterName
-    case Ali    extends CharacterName
-    case James  extends CharacterName
-    case Bella  extends CharacterName
-    case Tobias extends CharacterName
-    case Chloe  extends CharacterName
-    case Chris  extends CharacterName
-    case Adam   extends CharacterName
+    case Dan     extends CharacterName
+    case Dave    extends CharacterName
+    case Dougie  extends CharacterName
+    case Maya    extends CharacterName
+    case Pere    extends CharacterName
+    case Shah    extends CharacterName
+    case Lee     extends CharacterName
+    case Gokce   extends CharacterName
+    case Rob     extends CharacterName
+    case Josh    extends CharacterName
+    case Becky   extends CharacterName
+    case Miles   extends CharacterName
+    case Anne    extends CharacterName
+    case Luke    extends CharacterName
+    case Ali     extends CharacterName
+    case James   extends CharacterName
+    case Bella   extends CharacterName
+    case Tobias  extends CharacterName
+    case Chloe   extends CharacterName
+    case Chris   extends CharacterName
+    case Adam    extends CharacterName
+    case Waltons extends CharacterName
   object Debug {
     // Do you want a red box highlighting the bounding box of each character
     inline val drawCharacterBoxes = false
