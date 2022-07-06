@@ -18,11 +18,11 @@ object Quotes {
     case CharacterName.Rob    => "Who do I talk to about..."
     case CharacterName.Anne   => "FNORD!!!"
     case CharacterName.Luke   => "Dave, I'm hoping to save\n The WORLD!! Can I buy another\n few days hols?"
-    case CharacterName.Ali    => "Can you explain what a monad is one more time?"
+    case CharacterName.Ali    => "Can you explain what a\n monad is one more time?"
     case CharacterName.Bella  => "Bella is cool!"
     case CharacterName.James  => "Can I wrap this in an SVG-template?"
     case CharacterName.Tobias => "It's OK that you're\nwrong about whitespace <3"
-    case CharacterName.Chloe  => "scala isn't as bad as I thought!"
+    case CharacterName.Chloe  => "Scala isn't as bad as I thought!"
     case CharacterName.Chris  => "I still don't get it.."
   }
 }
