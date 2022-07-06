@@ -134,7 +134,7 @@ object Assets {
         AssetType.Image(Captain.gokceRef, AssetPath(baseUrl + "assets/" + Captain.gokceRef + ".png")),
         AssetType.Image(Captain.beckyRef, AssetPath(baseUrl + "assets/" + Captain.beckyRef + ".png")),
         AssetType.Image(Captain.anneRef, AssetPath(baseUrl + "assets/" + Captain.anneRef + ".png")),
-        AssetType.Image(Captain.anneRef, AssetPath(baseUrl + "assets/" + Captain.lukeRef + ".png")),
+        AssetType.Image(Captain.lukeRef, AssetPath(baseUrl + "assets/" + Captain.lukeRef + ".png")),
         AssetType.Text(Captain.jsonRef, AssetPath(baseUrl + "assets/" + Captain.ref + ".json"))
       )
   }
