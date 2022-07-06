@@ -5,7 +5,7 @@ import indigo.scenes.*
 import pirate.scenes.level.subsystems.CloudsAutomata
 import pirate.scenes.level.subsystems.CloudsSubSystem
 import pirate.scenes.level.LevelView
-import pirate.core.{Model, StartupData, ViewModel}
+import pirate.core.{Constants, Model, StartupData, ViewModel}
 import pirate.core.Constants.CharacterName
 import pirate.scenes.level.model.Platform
 import pirate.scenes.level.model.LevelModel
@@ -125,14 +125,29 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
     Outcome(
       (model, viewModel) match {
         case (m @ LevelModel.Ready(_, _, _, _), vm @ LevelViewModel.Ready(_)) =>
-          LevelView.draw(
-            context.gameTime,
-            m,
-            vm,
-            context.startUpData.spritesByName,
-            context.startUpData.levelDataStore,
-            context.startUpData.screenData
-          )
+          LevelView
+            .draw(
+              context.gameTime,
+              m,
+              vm,
+              context.startUpData.spritesByName,
+              context.startUpData.levelDataStore,
+              context.startUpData.screenData
+            )
+            .withCamera {
+              val desiredVertex = m.dave.character.center + Vertex(8, 4.5)
+              println(s"DESIRED VERTEX IS $desiredVertex")
+              val maxX: Double = 20
+              val maxY: Double = 11.5
+              val minX: Double = 13.25
+              val minY: Double = 7
+              val clamped      = desiredVertex.clamp(Vertex(minX, minY), Vertex(maxX, maxY))
+              Camera.LookAt(
+                Constants.MagicNumbers.modelPointScaledToView(clamped),
+                Zoom(1.5),
+                Radians.zero
+              )
+            }
 
         case _ =>
           SceneUpdateFragment.empty

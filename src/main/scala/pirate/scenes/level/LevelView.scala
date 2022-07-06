@@ -150,22 +150,10 @@ object LevelView {
                 1,
                 Assets.Fonts.fontKey,
                 Assets.Fonts.fontMaterial
-              ).alignCenter.scaleBy(0.7, 0.7)
+              ).alignCenter
             )
           else Layer.empty
         )
-    // .withCamera {
-    //  import IndigoLogger._
-    //  val at = MagicNumbers.modelPointScaledToView(pirate.center).toPoint - Point(720, 180)
-    //  consoleLog(
-    //    s"Looking at $at compared to pirate center at ${pirate.center}"
-    //  )
-    //  Camera.Fixed(
-    //    at,
-    //    Zoom.x2,
-    //    Radians.zero
-    //  )
-    // }
 
     val respawnFlashSignal: Seconds => Signal[(Boolean, Boolean)] =
       lastRespawn => Signal(_ < lastRespawn + Seconds(1.2)) |*| Signal.Pulse(Seconds(0.1))
