@@ -23,7 +23,7 @@ object LevelView {
       levelDataStore: Option[LevelDataStore],
       backgroundPerScreen: LevelModel.Screen => ScreenData
   ): SceneUpdateFragment =
-    Level.draw(levelDataStore, backgroundPerScreen(model.currentScreen)) |+|
+    Level.draw(levelDataStore, backgroundPerScreen, model.currentScreen) |+|
       (if (Constants.Debug.drawTerrainBoxes)
          SceneUpdateFragment.empty.addLayer(
            Layer(
@@ -52,19 +52,24 @@ object LevelView {
 
   object Level {
 
-    def draw(levelDataStore: Option[LevelDataStore], screenData: ScreenData): SceneUpdateFragment =
+    def draw(
+        levelDataStore: Option[LevelDataStore],
+        screenDatas: LevelModel.Screen => ScreenData,
+        currentScreen: LevelModel.Screen
+    ): SceneUpdateFragment =
       levelDataStore
         .map { assets =>
           SceneUpdateFragment.empty
             .addLayer(
               Layer(
                 BindingKey("background"),
-                List(Graphic(Rectangle(0, 0, 640, 360), 50, screenData.background)) ++
-                  drawWater(assets.waterReflections)
+                List(Graphic(Rectangle(0, 0, 640, 360), 50, screenDatas(currentScreen).background)) ++
+                  (if (currentScreen == LevelModel.Screen.End) Nil
+                   else drawWater(assets.waterReflections))
               )
             )
             .addLayer(
-              Layer(BindingKey("game"), drawForeground(assets))
+              Layer(BindingKey("game"), drawForeground(assets, currentScreen == LevelModel.Screen.End))
             )
             .withAudio(
               SceneAudio(
@@ -86,20 +91,20 @@ object LevelView {
         waterReflections.moveBy(-100, 60).play()
       )
 
-    def drawForeground(assets: LevelDataStore): List[SceneNode] =
+    def drawForeground(assets: LevelDataStore, isLastScreen: Boolean): List[SceneNode] =
       List(
-        assets.flag.play(),
-        assets.itv.play(),
-        Assets.Trees.tallTrunkGraphic.moveTo(420, 204),
-        Assets.Trees.leftLeaningTrunkGraphic.moveTo(100, 254),
-        Assets.Trees.rightLeaningTrunkGraphic.moveTo(25, 166),
-        assets.backTallPalm.moveTo(420, 194).changeCycle(CycleLabel("P Back")).play(),
-        assets.palm.moveTo(397, 172).play(),
-        assets.palm.moveTo(77, 219).play(),
-        assets.palm.moveTo(37, 120).play(),
-        Assets.Static.chestGraphic.moveTo(380, 256),
-        assets.terrain
-      )
+        Option.unless(isLastScreen)(assets.flag.play()),
+        Some(assets.itv.play()),
+        Option.unless(isLastScreen)(Assets.Trees.tallTrunkGraphic.moveTo(420, 204)),
+        Option.unless(isLastScreen)(Assets.Trees.leftLeaningTrunkGraphic.moveTo(100, 254)),
+        Option.unless(isLastScreen)(Assets.Trees.rightLeaningTrunkGraphic.moveTo(25, 166)),
+        Option.unless(isLastScreen)(assets.backTallPalm.moveTo(420, 194).changeCycle(CycleLabel("P Back")).play()),
+        Option.unless(isLastScreen)(assets.palm.moveTo(397, 172).play()),
+        Option.unless(isLastScreen)(assets.palm.moveTo(77, 219).play()),
+        Option.unless(isLastScreen)(assets.palm.moveTo(37, 120).play()),
+        Option.unless(isLastScreen)(Assets.Static.chestGraphic.moveTo(380, 256)),
+        Some(assets.terrain)
+      ).flatten
   }
 
   object CharacterDrawer {

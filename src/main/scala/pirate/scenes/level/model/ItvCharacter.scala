@@ -150,18 +150,19 @@ object ItvCharacter {
   // I am deciding that all our sprites are a square the same size as a tile.
   // This gives us easy maths, because the BouncyDave sprite is 224x224, so we can scale between sprites and tiles by x7,
   // and between graphics and model by x32
-  val size = Vertex(0.8d, 0.9d)
+  val size           = Vertex(0.8d, 0.9d)
+  val daveStartPoint = Vertex(1.2d, 0.0d)
 
   def initialDave: PlayerCharacter = PlayerCharacter(
     ItvCharacter(
-      BoundingBox(Vertex(1.2d, 0.0d), size),
+      BoundingBox(daveStartPoint, size),
       CharacterState.FallingRight,
       Seconds.zero,
       Seconds.zero,
       0,
       useInput = true,
       CharacterName.Dave,
-      Vertex(1.0, 0.0)
+      daveStartPoint
     )
   )
 
