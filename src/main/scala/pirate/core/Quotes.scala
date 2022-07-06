@@ -22,6 +22,6 @@ object Quotes {
     case CharacterName.Bella  => "Bella is cool!"
     case CharacterName.James  => "Can I wrap this in an SVG-template?"
     case CharacterName.Tobias => "It's OK that you're\nwrong about whitespace <3"
-    case CharacterName.Chloe  => "???"
+    case CharacterName.Chloe  => "scala isn't as bad as I thought!"
   }
 }
