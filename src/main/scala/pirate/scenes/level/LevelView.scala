@@ -5,11 +5,10 @@ import pirate.core.{Assets, Constants, LevelDataStore}
 import indigoextras.geometry.{BoundingBox, Vertex}
 import pirate.core.Constants.CharacterName
 import pirate.core.Quotes
-import pirate.scenes.level.model.CharacterState
-import pirate.scenes.level.model.ItvCharacter
-import pirate.scenes.level.model.LevelModel
+import pirate.scenes.level.model.{CharacterState, ItvCharacter, LevelModel}
 import pirate.scenes.level.viewmodel.LevelViewModel
 import pirate.scenes.level.viewmodel.CharacterViewState
+import pirate.core.ScreenData
 
 object LevelView {
 
@@ -21,9 +20,10 @@ object LevelView {
       model: LevelModel.Ready,
       viewModel: LevelViewModel.Ready,
       spritesByName: Map[CharacterName, Sprite[Material.ImageEffects]],
-      levelDataStore: Option[LevelDataStore]
+      levelDataStore: Option[LevelDataStore],
+      backgroundPerScreen: Map[LevelModel.Screen, ScreenData]
   ): SceneUpdateFragment =
-    Level.draw(levelDataStore) |+|
+    Level.draw(levelDataStore, backgroundPerScreen(model.currentScreen)) |+|
       (if (Constants.Debug.drawTerrainBoxes)
          SceneUpdateFragment.empty.addLayer(
            Layer(
@@ -57,14 +57,14 @@ object LevelView {
 
   object Level {
 
-    def draw(levelDataStore: Option[LevelDataStore]): SceneUpdateFragment =
+    def draw(levelDataStore: Option[LevelDataStore], screenData: ScreenData): SceneUpdateFragment =
       levelDataStore
         .map { assets =>
           SceneUpdateFragment.empty
             .addLayer(
               Layer(
                 BindingKey("background"),
-                List(Graphic(Rectangle(0, 0, 640, 360), 50, Material.Bitmap(Assets.Static.backgroundRef))) ++
+                List(Graphic(Rectangle(0, 0, 640, 360), 50, screenData.background)) ++
                   drawWater(assets.waterReflections)
               )
             )
