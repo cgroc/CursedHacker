@@ -53,29 +53,31 @@ object InitialLoad {
         tobias   <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.tobiasRef, Depth(2))
         chloe    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.chloeRef, Depth(2))
         chris    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.chrisRef, Depth(2))
+        waltons  <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.waltonsRef, Depth(2))
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
       } yield makeStartupData(
         {
-          case Constants.CharacterName.Dave   => dave
-          case Constants.CharacterName.Dougie => dougie
-          case Constants.CharacterName.Maya   => maya
-          case Constants.CharacterName.Shah   => shah
-          case Constants.CharacterName.Pere   => pere
-          case Constants.CharacterName.Lee    => lee
-          case Constants.CharacterName.Dan    => dan
-          case Constants.CharacterName.Miles  => miles
-          case Constants.CharacterName.Rob    => rob
-          case Constants.CharacterName.Josh   => josh
-          case Constants.CharacterName.Gokce  => gokce
-          case Constants.CharacterName.Becky  => becky
-          case Constants.CharacterName.Anne   => anne
-          case Constants.CharacterName.Luke   => luke
-          case Constants.CharacterName.Ali    => ali
-          case Constants.CharacterName.Bella  => bella
-          case Constants.CharacterName.James  => james
-          case Constants.CharacterName.Tobias => tobias
-          case Constants.CharacterName.Chloe  => chloe
-          case Constants.CharacterName.Chris  => chris
+          case Constants.CharacterName.Dave    => dave
+          case Constants.CharacterName.Dougie  => dougie
+          case Constants.CharacterName.Maya    => maya
+          case Constants.CharacterName.Shah    => shah
+          case Constants.CharacterName.Pere    => pere
+          case Constants.CharacterName.Lee     => lee
+          case Constants.CharacterName.Dan     => dan
+          case Constants.CharacterName.Miles   => miles
+          case Constants.CharacterName.Rob     => rob
+          case Constants.CharacterName.Josh    => josh
+          case Constants.CharacterName.Gokce   => gokce
+          case Constants.CharacterName.Becky   => becky
+          case Constants.CharacterName.Anne    => anne
+          case Constants.CharacterName.Luke    => luke
+          case Constants.CharacterName.Ali     => ali
+          case Constants.CharacterName.Bella   => bella
+          case Constants.CharacterName.James   => james
+          case Constants.CharacterName.Tobias  => tobias
+          case Constants.CharacterName.Chloe   => chloe
+          case Constants.CharacterName.Chris   => chris
+          case Constants.CharacterName.Waltons => waltons
         },
         maybeLds
       )) match {
