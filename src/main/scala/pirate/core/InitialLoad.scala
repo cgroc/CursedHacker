@@ -202,6 +202,7 @@ object InitialLoad {
             case LevelModel.Screen.Two   => ScreenData(Material.Bitmap(Assets.Static.background3Ref))
             case LevelModel.Screen.Three => ScreenData(Material.Bitmap(Assets.Static.background4Ref))
             case LevelModel.Screen.Four  => ScreenData(Material.Bitmap(Assets.Static.background5Ref))
+            case LevelModel.Screen.Five  => ScreenData(Material.Bitmap(Assets.Static.finalBackgroundRef))
           }
         )
       )

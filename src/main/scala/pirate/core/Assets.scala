@@ -14,11 +14,12 @@ It doesn't matter that none of their assets have loaded yet.
 object Assets {
 
   object Static {
-    val backgroundRef: AssetName  = AssetName("background")
-    val background2Ref: AssetName = AssetName("background2")
-    val background3Ref: AssetName = AssetName("background3")
-    val background4Ref: AssetName = AssetName("background4")
-    val background5Ref: AssetName = AssetName("background5")
+    val backgroundRef: AssetName      = AssetName("background")
+    val background2Ref: AssetName     = AssetName("background2")
+    val background3Ref: AssetName     = AssetName("background3")
+    val background4Ref: AssetName     = AssetName("background4")
+    val background5Ref: AssetName     = AssetName("background5")
+    val finalBackgroundRef: AssetName = AssetName("backgroundLast")
 
     val terrainJsonRef: AssetName = AssetName("terrainJson")
     val terrainRef: AssetName     = AssetName("terrain")
@@ -34,6 +35,7 @@ object Assets {
         AssetType.Image(Static.background3Ref, AssetPath(baseUrl + "assets/bg3.png")),
         AssetType.Image(Static.background4Ref, AssetPath(baseUrl + "assets/bg4.png")),
         AssetType.Image(Static.background5Ref, AssetPath(baseUrl + "assets/bg5.png")),
+        AssetType.Image(Static.finalBackgroundRef, AssetPath(baseUrl + "assets/bye.png")),
         AssetType.Image(Static.chestRef, AssetPath(baseUrl + "assets/" + Static.chestRef + ".png")),
         AssetType.Image(Static.terrainRef, AssetPath(baseUrl + "assets/terrain.png")),
         AssetType.Text(Static.terrainJsonRef, AssetPath(baseUrl + "assets/terrain.json"))

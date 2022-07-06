@@ -22,7 +22,7 @@ object LevelModel {
     // NOTE: When adding a screen, remember to point Zero.prev to your new screen for wrapping around
     case object Zero extends Screen {
       override def next: Screen = Screen.One
-      override def prev: Screen = Screen.Four
+      override def prev: Screen = Screen.Zero
     }
     case object One extends Screen {
       override def next: Screen = Screen.Two
@@ -37,11 +37,16 @@ object LevelModel {
       override def prev: Screen = Screen.Two
     }
     case object Four extends Screen {
-      override def next: Screen = Screen.Zero
+      override def next: Screen = Screen.Five
       override def prev: Screen = Screen.Three
     }
-    
-    val all: Seq[Screen] = Seq(Zero, One, Two, Three, Four)
+
+    case object Five extends Screen {
+      override def next: Screen = Screen.Five
+      override def prev: Screen = Screen.Five
+    }
+
+    val all: Seq[Screen] = Seq(Zero, One, Two, Three, Four, Five)
   }
 
   enum ScreenChange:
