@@ -13,12 +13,17 @@ object Constants {
     case Maya   extends CharacterName
     case Pere   extends CharacterName
     case Shah   extends CharacterName
-    case Lee   extends CharacterName
+    case Lee    extends CharacterName
+    case Gokce  extends CharacterName
+    case Rob    extends CharacterName
+    case Josh   extends CharacterName
+    case Becky  extends CharacterName
+    case Miles  extends CharacterName
 
   object Debug {
     // Do you want a red box highlighting the bounding box of each character
-    inline val drawCharacterBoxes = true
-    inline val drawTerrainBoxes   = true
+    inline val drawCharacterBoxes = false
+    inline val drawTerrainBoxes   = false
   }
 
   object MagicNumbers {

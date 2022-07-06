@@ -102,14 +102,20 @@ object Assets {
 //    val ref: AssetName     = AssetName("Captain Clown Nose")
 //    val jsonRef: AssetName = AssetName("Captain Clown Nose JSON")
 
+    val jsonRef: AssetName = AssetName("bouncydave JSON")
+
     val ref: AssetName       = AssetName("bouncydave")
     val danRef: AssetName    = AssetName("bouncydanglitch")
     val dougieRef: AssetName = AssetName("bouncydougie")
     val mayaRef: AssetName   = AssetName("bouncymaya")
     val shahRef: AssetName   = AssetName("bouncyShah")
-    val jsonRef: AssetName   = AssetName("bouncydave JSON")
     val pereRef: AssetName   = AssetName("bouncypere")
-    val leeRef: AssetName   = AssetName("bouncylee")
+    val leeRef: AssetName    = AssetName("bouncylee")
+    val milesRef: AssetName  = AssetName("bouncymiles")
+    val robRef: AssetName    = AssetName("bouncyrob")
+    val joshRef: AssetName   = AssetName("bouncyjosh")
+    val gokceRef: AssetName  = AssetName("bouncygokce")
+    val beckyRef: AssetName  = AssetName("bouncybecky")
 
     def assets(baseUrl: String): Set[AssetType] =
       Set(
@@ -120,6 +126,11 @@ object Assets {
         AssetType.Image(Captain.pereRef, AssetPath(baseUrl + "assets/" + Captain.pereRef + ".png")),
         AssetType.Image(Captain.shahRef, AssetPath(baseUrl + "assets/" + Captain.shahRef + ".png")),
         AssetType.Image(Captain.leeRef, AssetPath(baseUrl + "assets/" + Captain.leeRef + ".png")),
+        AssetType.Image(Captain.milesRef, AssetPath(baseUrl + "assets/" + Captain.milesRef + ".png")),
+        AssetType.Image(Captain.robRef, AssetPath(baseUrl + "assets/" + Captain.robRef + ".png")),
+        AssetType.Image(Captain.joshRef, AssetPath(baseUrl + "assets/" + Captain.joshRef + ".png")),
+        AssetType.Image(Captain.gokceRef, AssetPath(baseUrl + "assets/" + Captain.gokceRef + ".png")),
+        AssetType.Image(Captain.beckyRef, AssetPath(baseUrl + "assets/" + Captain.beckyRef + ".png")),
         AssetType.Text(Captain.jsonRef, AssetPath(baseUrl + "assets/" + Captain.ref + ".json"))
       )
   }

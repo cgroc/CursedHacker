@@ -1,12 +1,11 @@
 package pirate.scenes.level
 
-import indigo._
-import indigo.scenes._
-
+import indigo.*
+import indigo.scenes.*
 import pirate.scenes.level.subsystems.CloudsAutomata
 import pirate.scenes.level.subsystems.CloudsSubSystem
 import pirate.scenes.level.LevelView
-import pirate.core.{StartupData, Model, ViewModel}
+import pirate.core.{Model, StartupData, ViewModel}
 import pirate.core.Constants.CharacterName
 import pirate.scenes.level.model.Platform
 import pirate.scenes.level.model.LevelModel
@@ -15,6 +14,7 @@ import pirate.scenes.level.viewmodel.LevelViewModel
 import pirate.scenes.level.viewmodel.CharacterViewState
 import pirate.scenes.level.model.ItvCharacter
 import indigoextras.geometry.Vertex
+import pirate.scenes.level.model.ItvCharacter.otherItvCharacter
 
 final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, ViewModel] {
   type SceneModel     = LevelModel
@@ -54,11 +54,23 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
               Screen.Zero,
               ItvCharacter.initialDave,
               Map(
-                Screen.Zero -> List(ItvCharacter.otherItvCharacter(CharacterName.Dougie, Vertex(7d, 0d))),
-                Screen.One  -> List(ItvCharacter.otherItvCharacter(CharacterName.Maya, Vertex(10d, 0d))),
-                Screen.Two  -> List(ItvCharacter.otherItvCharacter(CharacterName.Shah, Vertex(8d, 0d))),
-                Screen.Three  ->List(ItvCharacter.otherItvCharacter(CharacterName.Pere, Vertex(10d, 0d))),
-                Screen.Four  ->List(ItvCharacter.otherItvCharacter(CharacterName.Lee, Vertex(10d, 0d)), ItvCharacter.otherItvCharacter(CharacterName.Dan, Vertex(13d, 0d)))
+                Screen.Zero -> List(
+                  otherItvCharacter(CharacterName.Dougie, Vertex(7, 0)),
+                  otherItvCharacter(CharacterName.Josh, Vertex(5, 0)),
+                  otherItvCharacter(CharacterName.Becky, Vertex(10, 0)),
+                  otherItvCharacter(CharacterName.Rob, Vertex(14, 0))
+                ),
+                Screen.One -> List(otherItvCharacter(CharacterName.Maya, Vertex(10, 0))),
+                Screen.Two -> List(otherItvCharacter(CharacterName.Shah, Vertex(8, 0))),
+                Screen.Three -> List(
+                  otherItvCharacter(CharacterName.Pere, Vertex(10, 0)),
+                  otherItvCharacter(CharacterName.Miles, Vertex(14, 0))
+                ),
+                Screen.Four -> List(
+                  otherItvCharacter(CharacterName.Lee, Vertex(10, 0)),
+                  otherItvCharacter(CharacterName.Dan, Vertex(14, 0)),
+                  otherItvCharacter(CharacterName.Gokce, Vertex(6, 0))
+                )
               ),
               Platform.fromTerrainMap(levelDataStore.terrainMap)
             )

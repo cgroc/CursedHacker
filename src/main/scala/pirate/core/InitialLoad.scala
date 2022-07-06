@@ -40,17 +40,28 @@ object InitialLoad {
         shah     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.shahRef, Depth(2))
         lee      <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.leeRef, Depth(2))
         dan      <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.danRef, Depth(2))
+        miles    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.milesRef, Depth(2))
+        rob      <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.robRef, Depth(2))
+        josh     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.joshRef, Depth(2))
+        gokce    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.gokceRef, Depth(2))
+        becky    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.beckyRef, Depth(2))
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
       } yield makeStartupData(
-        Map(
-          Constants.CharacterName.Dave   -> dave,
-          Constants.CharacterName.Dougie -> dougie,
-          Constants.CharacterName.Maya   -> maya,
-          Constants.CharacterName.Shah   -> shah,
-          Constants.CharacterName.Pere   -> pere,
-          Constants.CharacterName.Lee    -> lee,
-          Constants.CharacterName.Dan    -> dan
-        ),
+        {
+          case Constants.CharacterName.Dave   => dave
+          case Constants.CharacterName.Dougie => dougie
+          case Constants.CharacterName.Maya   => maya
+          case Constants.CharacterName.Shah   => shah
+          case Constants.CharacterName.Pere   => pere
+          case Constants.CharacterName.Lee    => lee
+          case Constants.CharacterName.Dan    => dan
+          case Constants.CharacterName.Miles  => miles
+          case Constants.CharacterName.Rob    => rob
+          case Constants.CharacterName.Josh   => josh
+          case Constants.CharacterName.Gokce  => gokce
+          case Constants.CharacterName.Becky  => becky
+
+        },
         maybeLds
       )) match {
         case Left(message) =>
@@ -169,19 +180,20 @@ object InitialLoad {
     )
 
   def makeStartupData(
-      spritesByName: Map[CharacterName, SpriteAndAnimations],
+      spritesByName: CharacterName => SpriteAndAnimations,
       levelDataStore: Option[(LevelDataStore, List[Animation])]
   ): Startup.Success[StartupData] =
     Startup
       .Success(
         StartupData(
-          spritesByName = spritesByName.view
-            .mapValues(
-              _.sprite
-                .modifyMaterial(m => Material.ImageEffects(m.diffuse))
-                .scaleBy(Constants.MagicNumbers.bouncyDaveScaleFactor, Constants.MagicNumbers.bouncyDaveScaleFactor)
-            )
-            .toMap,
+          spritesByName = spritesByName andThen (
+            _.sprite
+              .modifyMaterial(m => Material.ImageEffects(m.diffuse))
+              .scaleBy(
+                Constants.MagicNumbers.bouncyDaveScaleFactor,
+                Constants.MagicNumbers.bouncyDaveScaleFactor
+              )
+          ),
           levelDataStore = levelDataStore.map(_._1),
           screenData = {
             case LevelModel.Screen.Zero  => ScreenData(Material.Bitmap(Assets.Static.backgroundRef))
@@ -192,13 +204,13 @@ object InitialLoad {
           }
         )
       )
-      .addAnimations(spritesByName.values.toList.map(_.animations))
+      .addAnimations(CharacterName.values.map(spritesByName).toList.map(_.animations))
       .addAnimations(levelDataStore.map(_._2).getOrElse(Nil))
 
 }
 
 final case class StartupData(
-    spritesByName: Map[CharacterName, Sprite[Material.ImageEffects]],
+    spritesByName: CharacterName => Sprite[Material.ImageEffects],
     levelDataStore: Option[LevelDataStore],
     screenData: LevelModel.Screen => ScreenData
 )

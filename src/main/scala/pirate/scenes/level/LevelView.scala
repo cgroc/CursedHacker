@@ -19,7 +19,7 @@ object LevelView {
       gameTime: GameTime,
       model: LevelModel.Ready,
       viewModel: LevelViewModel.Ready,
-      spritesByName: Map[CharacterName, Sprite[Material.ImageEffects]],
+      spritesByName: CharacterName => Sprite[Material.ImageEffects],
       levelDataStore: Option[LevelDataStore],
       backgroundPerScreen: LevelModel.Screen => ScreenData
   ): SceneUpdateFragment =
@@ -43,12 +43,7 @@ object LevelView {
             gameTime,
             character,
             viewModel.characterStates.getOrElse(character.name, CharacterViewState.initial),
-            spritesByName.getOrElse(
-              character.name, {
-                IndigoLogger.error(s"Oh dear, couldn't find a sprite with name ${character.name} in $spritesByName")
-                errorSprite
-              }
-            ),
+            spritesByName(character.name),
             debug = Constants.Debug.drawCharacterBoxes
           )
         }

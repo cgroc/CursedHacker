@@ -5,6 +5,7 @@ import indigo.scenes._
 import indigoextras.subsystems._
 
 import pirate.core.Assets
+import pirate.core.Constants.CharacterName
 import pirate.core.StartupData
 import indigo.scenes.SceneEvent.JumpTo
 import pirate.core.{Model, ViewModel}
@@ -93,7 +94,7 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
     Outcome(
       LoadingView.draw(
         screenDimensions,
-        context.startUpData.spritesByName.head._2,
+        context.startUpData.spritesByName(CharacterName.Dave),
         loadingState
       )
     )
