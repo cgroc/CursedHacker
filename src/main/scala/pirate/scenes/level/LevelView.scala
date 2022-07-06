@@ -152,7 +152,7 @@ object LevelView {
           )
             Layer(
               Text(
-                Quotes.get(character.name),
+                s"${character.name.toString}:\n ${Quotes.get(character.name)}",
                 Constants.MagicNumbers.modelBoxScaledToView(character.boundingBox).center.x,
                 Constants.MagicNumbers.modelBoxScaledToView(character.boundingBox).center.y,
                 1,
