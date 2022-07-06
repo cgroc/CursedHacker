@@ -27,7 +27,7 @@ object Constants {
     case Tobias extends CharacterName
     case Chloe  extends CharacterName
     case Chris  extends CharacterName
-
+    case Adam   extends CharacterName
   object Debug {
     // Do you want a red box highlighting the bounding box of each character
     inline val drawCharacterBoxes = false
