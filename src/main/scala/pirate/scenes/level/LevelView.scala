@@ -21,7 +21,7 @@ object LevelView {
       viewModel: LevelViewModel.Ready,
       spritesByName: Map[CharacterName, Sprite[Material.ImageEffects]],
       levelDataStore: Option[LevelDataStore],
-      backgroundPerScreen: Map[LevelModel.Screen, ScreenData]
+      backgroundPerScreen: LevelModel.Screen => ScreenData
   ): SceneUpdateFragment =
     Level.draw(levelDataStore, backgroundPerScreen(model.currentScreen)) |+|
       (if (Constants.Debug.drawTerrainBoxes)

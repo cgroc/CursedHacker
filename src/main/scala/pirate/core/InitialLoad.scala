@@ -48,7 +48,7 @@ object InitialLoad {
           Constants.CharacterName.Maya   -> maya,
           Constants.CharacterName.Shah   -> shah,
           Constants.CharacterName.Pere   -> pere,
-          Constants.CharacterName.Lee    -> lee
+          Constants.CharacterName.Lee    -> lee,
           Constants.CharacterName.Dan    -> dan
         ),
         maybeLds
@@ -183,12 +183,13 @@ object InitialLoad {
             )
             .toMap,
           levelDataStore = levelDataStore.map(_._1),
-          screenData = Map(
-            LevelModel.Screen.Zero  -> ScreenData(Material.Bitmap(Assets.Static.backgroundRef)),
-            LevelModel.Screen.One   -> ScreenData(Material.Bitmap(Assets.Static.background3Ref)),
-            LevelModel.Screen.Two   -> ScreenData(Material.Bitmap(Assets.Static.background4Ref)),
-            LevelModel.Screen.Three -> ScreenData(Material.Bitmap(Assets.Static.background5Ref))
-          )
+          screenData = {
+            case LevelModel.Screen.Zero  => ScreenData(Material.Bitmap(Assets.Static.backgroundRef))
+            case LevelModel.Screen.One   => ScreenData(Material.Bitmap(Assets.Static.background2Ref))
+            case LevelModel.Screen.Two   => ScreenData(Material.Bitmap(Assets.Static.background3Ref))
+            case LevelModel.Screen.Three => ScreenData(Material.Bitmap(Assets.Static.background4Ref))
+            case LevelModel.Screen.Four  => ScreenData(Material.Bitmap(Assets.Static.background5Ref))
+          }
         )
       )
       .addAnimations(spritesByName.values.toList.map(_.animations))
@@ -199,7 +200,7 @@ object InitialLoad {
 final case class StartupData(
     spritesByName: Map[CharacterName, Sprite[Material.ImageEffects]],
     levelDataStore: Option[LevelDataStore],
-    screenData: Map[LevelModel.Screen, ScreenData]
+    screenData: LevelModel.Screen => ScreenData
 )
 final case class LevelDataStore(
     waterReflections: Sprite[Material.Bitmap],
