@@ -70,8 +70,8 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
                   otherItvCharacter(CharacterName.Miles, Vertex(14, 0))
                 ),
                 Screen.Four -> List(
-                  otherItvCharacter(CharacterName.Lee, Vertex(10, 0)),
-                  otherItvCharacter(CharacterName.Dan, Vertex(14, 0)),
+                  otherItvCharacter(CharacterName.Lee, Vertex(9, 0)),
+                  otherItvCharacter(CharacterName.Dan, Vertex(11, 0)),
                   otherItvCharacter(CharacterName.Gokce, Vertex(6, 0))
                 )
               ),
