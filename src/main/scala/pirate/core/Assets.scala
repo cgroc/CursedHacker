@@ -95,6 +95,7 @@ object Assets {
 //    val jsonRef: AssetName = AssetName("Captain Clown Nose JSON")
 
     val ref: AssetName       = AssetName("bouncydave")
+    val danRef: AssetName    = AssetName("bouncydanglitch")
     val dougieRef: AssetName = AssetName("bouncydougie")
     val mayaRef: AssetName   = AssetName("bouncymaya")
     val shahRef: AssetName   = AssetName("bouncyShah")
@@ -104,6 +105,7 @@ object Assets {
     def assets(baseUrl: String): Set[AssetType] =
       Set(
         AssetType.Image(Captain.ref, AssetPath(baseUrl + "assets/" + Captain.ref + ".png")),
+        AssetType.Image(Captain.danRef, AssetPath(baseUrl + "assets/" + Captain.danRef + ".png")),
         AssetType.Image(Captain.dougieRef, AssetPath(baseUrl + "assets/" + Captain.dougieRef + ".png")),
         AssetType.Image(Captain.mayaRef, AssetPath(baseUrl + "assets/" + Captain.mayaRef + ".png")),
         AssetType.Image(Captain.pereRef, AssetPath(baseUrl + "assets/" + Captain.pereRef + ".png")),
