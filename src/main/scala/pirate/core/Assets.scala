@@ -14,7 +14,11 @@ It doesn't matter that none of their assets have loaded yet.
 object Assets {
 
   object Static {
-    val backgroundRef: AssetName = AssetName("background")
+    val backgroundRef: AssetName  = AssetName("background")
+    val background2Ref: AssetName = AssetName("background2")
+    val background3Ref: AssetName = AssetName("background3")
+    val background4Ref: AssetName = AssetName("background4")
+    val background5Ref: AssetName = AssetName("background5")
 
     val terrainJsonRef: AssetName = AssetName("terrainJson")
     val terrainRef: AssetName     = AssetName("terrain")
@@ -26,6 +30,10 @@ object Assets {
     def assets(baseUrl: String): Set[AssetType] =
       Set(
         AssetType.Image(Static.backgroundRef, AssetPath(baseUrl + "assets/bg.png")),
+        AssetType.Image(Static.background2Ref, AssetPath(baseUrl + "assets/bg2.png")),
+        AssetType.Image(Static.background3Ref, AssetPath(baseUrl + "assets/bg3.png")),
+        AssetType.Image(Static.background4Ref, AssetPath(baseUrl + "assets/bg4.png")),
+        AssetType.Image(Static.background5Ref, AssetPath(baseUrl + "assets/bg5.png")),
         AssetType.Image(Static.chestRef, AssetPath(baseUrl + "assets/" + Static.chestRef + ".png")),
         AssetType.Image(Static.terrainRef, AssetPath(baseUrl + "assets/terrain.png")),
         AssetType.Text(Static.terrainJsonRef, AssetPath(baseUrl + "assets/terrain.json"))
@@ -95,6 +103,7 @@ object Assets {
 //    val jsonRef: AssetName = AssetName("Captain Clown Nose JSON")
 
     val ref: AssetName       = AssetName("bouncydave")
+    val danRef: AssetName    = AssetName("bouncydanglitch")
     val dougieRef: AssetName = AssetName("bouncydougie")
     val mayaRef: AssetName   = AssetName("bouncymaya")
     val shahRef: AssetName   = AssetName("bouncyShah")
@@ -105,6 +114,7 @@ object Assets {
     def assets(baseUrl: String): Set[AssetType] =
       Set(
         AssetType.Image(Captain.ref, AssetPath(baseUrl + "assets/" + Captain.ref + ".png")),
+        AssetType.Image(Captain.danRef, AssetPath(baseUrl + "assets/" + Captain.danRef + ".png")),
         AssetType.Image(Captain.dougieRef, AssetPath(baseUrl + "assets/" + Captain.dougieRef + ".png")),
         AssetType.Image(Captain.mayaRef, AssetPath(baseUrl + "assets/" + Captain.mayaRef + ".png")),
         AssetType.Image(Captain.pereRef, AssetPath(baseUrl + "assets/" + Captain.pereRef + ".png")),

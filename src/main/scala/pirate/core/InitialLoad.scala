@@ -5,6 +5,7 @@ import indigo.json.Json
 import indigo.shared.formats.TiledGridMap
 import pirate.core.Constants
 import pirate.core.Constants.CharacterName
+import pirate.scenes.level.model.LevelModel
 
 /*
 In a nutshell, the setup function here takes the boot data (screen dimensions),
@@ -38,6 +39,7 @@ object InitialLoad {
         pere     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.pereRef, Depth(2))
         shah     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.shahRef, Depth(2))
         lee      <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.leeRef, Depth(2))
+        dan      <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.danRef, Depth(2))
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
       } yield makeStartupData(
         Map(
@@ -47,6 +49,7 @@ object InitialLoad {
           Constants.CharacterName.Shah   -> shah,
           Constants.CharacterName.Pere   -> pere,
           Constants.CharacterName.Lee    -> lee
+          Constants.CharacterName.Dan    -> dan
         ),
         maybeLds
       )) match {
@@ -172,14 +175,20 @@ object InitialLoad {
     Startup
       .Success(
         StartupData(
-          spritesByName.view
+          spritesByName = spritesByName.view
             .mapValues(
               _.sprite
                 .modifyMaterial(m => Material.ImageEffects(m.diffuse))
                 .scaleBy(Constants.MagicNumbers.bouncyDaveScaleFactor, Constants.MagicNumbers.bouncyDaveScaleFactor)
             )
             .toMap,
-          levelDataStore.map(_._1)
+          levelDataStore = levelDataStore.map(_._1),
+          screenData = Map(
+            LevelModel.Screen.Zero  -> ScreenData(Material.Bitmap(Assets.Static.backgroundRef)),
+            LevelModel.Screen.One   -> ScreenData(Material.Bitmap(Assets.Static.background3Ref)),
+            LevelModel.Screen.Two   -> ScreenData(Material.Bitmap(Assets.Static.background4Ref)),
+            LevelModel.Screen.Three -> ScreenData(Material.Bitmap(Assets.Static.background5Ref))
+          )
         )
       )
       .addAnimations(spritesByName.values.toList.map(_.animations))
@@ -189,7 +198,8 @@ object InitialLoad {
 
 final case class StartupData(
     spritesByName: Map[CharacterName, Sprite[Material.ImageEffects]],
-    levelDataStore: Option[LevelDataStore]
+    levelDataStore: Option[LevelDataStore],
+    screenData: Map[LevelModel.Screen, ScreenData]
 )
 final case class LevelDataStore(
     waterReflections: Sprite[Material.Bitmap],
