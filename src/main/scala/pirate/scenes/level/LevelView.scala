@@ -69,7 +69,7 @@ object LevelView {
               )
             )
             .addLayer(
-              Layer(BindingKey("game"), drawForeground(assets, currentScreen == LevelModel.Screen.End))
+              Layer(BindingKey("game"), drawForeground(assets, currentScreen))
             )
             .withAudio(
               SceneAudio(
@@ -91,7 +91,9 @@ object LevelView {
         waterReflections.moveBy(-100, 60).play()
       )
 
-    def drawForeground(assets: LevelDataStore, isLastScreen: Boolean): List[SceneNode] =
+    def drawForeground(assets: LevelDataStore, currentScreen: LevelModel.Screen): List[SceneNode] = {
+      val isLastScreen  = currentScreen == LevelModel.Screen.End
+      val isFirstScreen = currentScreen == LevelModel.Screen.Start
       List(
         Option.unless(isLastScreen)(assets.flag.play()),
         Some(assets.itv.play()),
@@ -103,8 +105,9 @@ object LevelView {
         Option.unless(isLastScreen)(assets.palm.moveTo(77, 219).play()),
         Option.unless(isLastScreen)(assets.palm.moveTo(37, 120).play()),
         Option.unless(isLastScreen)(Assets.Static.chestGraphic.moveTo(380, 256)),
-        Some(assets.terrain)
+        if (isFirstScreen) Some(assets.terrainNoLeftDoor) else Some(assets.terrain)
       ).flatten
+    }
   }
 
   object CharacterDrawer {

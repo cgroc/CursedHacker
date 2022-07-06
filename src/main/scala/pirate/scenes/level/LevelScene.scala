@@ -65,7 +65,6 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
                   otherItvCharacter(CharacterName.Luke, Vertex(14, 0)),
                   otherItvCharacter(CharacterName.Anne, Vertex(5, 0)),
                   otherItvCharacter(CharacterName.Tobias, Vertex(7, 0))
-
                 ),
                 Screen.Two -> List(
                   otherItvCharacter(CharacterName.Shah, Vertex(8, 0)),
@@ -84,7 +83,8 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
                 ),
                 Screen.End -> List.empty
               ),
-              Platform.fromTerrainMap(levelDataStore.terrainMap)
+              Platform.fromTerrainMap(levelDataStore.terrainMap),
+              Platform.fromTerrainMap(levelDataStore.terrainMapNoLeftDoor)
             )
           )
 
@@ -118,7 +118,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
         case LevelModel.NotReady =>
           Outcome(viewModel)
 
-        case LevelModel.Ready(_, dave, characters, _) =>
+        case LevelModel.Ready(_, dave, characters, _, _) =>
           viewModel.update(context.gameTime, dave.character +: characters.values.flatten.toList)
       }
 
@@ -133,7 +133,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       (model, viewModel) match {
-        case (m @ LevelModel.Ready(_, _, _, _), vm @ LevelViewModel.Ready(_)) =>
+        case (m @ LevelModel.Ready(_, _, _, _, _), vm @ LevelViewModel.Ready(_)) =>
           LevelView
             .draw(
               context.gameTime,

@@ -48,9 +48,9 @@ object InitialLoad {
         anne     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.anneRef, Depth(2))
         luke     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.lukeRef, Depth(2))
         ali      <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.aliRef, Depth(2))
-        bella     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.bellaRef, Depth(2))
-        james     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.jamesRef, Depth(2))
-        tobias     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.tobiasRef, Depth(2))
+        bella    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.bellaRef, Depth(2))
+        james    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.jamesRef, Depth(2))
+        tobias   <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.tobiasRef, Depth(2))
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
       } yield makeStartupData(
         {
@@ -114,21 +114,32 @@ object InitialLoad {
 
       // Here we read the Tiled level description and manufacture a tuple of:
       // (a `TiledGridMap` of data, and a renderable verison of the map)
-      val terrainData: Option[(TiledGridMap[TileType], Group)] =
+      def terrainData(removeLeftDoor: Boolean): Option[(TiledGridMap[TileType], Group)] =
         for {
-          json         <- assetCollection.findTextDataByName(Assets.Static.terrainJsonRef)
-          tileMap      <- Json.tiledMapFromJson(json)
+          json <- assetCollection.findTextDataByName(Assets.Static.terrainJsonRef)
+          tileMap <- Json.tiledMapFromJson(json).map { tileMap =>
+            if (removeLeftDoor)
+              tileMap.copy(
+                layers = tileMap.layers.map(layer =>
+                  layer.copy(data = layer.data.zipWithIndex.collect { case (tile, idx) =>
+                    if (idx == 80 || idx == 60) 20 else tile // get rid of the gap on the left hand side
+                  })
+                )
+              )
+            else tileMap
+          }
           terrainGroup <- tileMap.toGroup(Assets.Static.terrainRef)
           grid         <- tileMap.toGrid(tileMapper)
         } yield grid -> terrainGroup.withDepth(Depth(4))
 
       for {
-        helm        <- loader(Assets.Helm.jsonRef, Assets.Helm.ref, Depth(9))
-        palm        <- loader(Assets.Trees.jsonRef, Assets.Trees.ref, Depth(1))
-        reflections <- loader(Assets.Water.jsonRef, Assets.Water.ref, Depth(20))
-        flag        <- loader(Assets.Flag.jsonRef, Assets.Flag.ref, Depth(10))
-        terrain     <- terrainData.toRight("Failed to load terrain")
-        itv         <- loader(Assets.Itv.jsonRef, Assets.Itv.ref, Depth(5))
+        helm              <- loader(Assets.Helm.jsonRef, Assets.Helm.ref, Depth(9))
+        palm              <- loader(Assets.Trees.jsonRef, Assets.Trees.ref, Depth(1))
+        reflections       <- loader(Assets.Water.jsonRef, Assets.Water.ref, Depth(20))
+        flag              <- loader(Assets.Flag.jsonRef, Assets.Flag.ref, Depth(10))
+        normalTerrain     <- terrainData(false).toRight("Failed to load terrain")
+        terrainNoLeftDoor <- terrainData(true).toRight("Failed to load terrain")
+        itv               <- loader(Assets.Itv.jsonRef, Assets.Itv.ref, Depth(5))
       } yield Some(
         makeAdditionalAssets(
           screenDimensions,
@@ -136,8 +147,10 @@ object InitialLoad {
           palm,
           reflections,
           flag,
-          terrain._1,
-          terrain._2,
+          normalTerrain._1,
+          normalTerrain._2,
+          terrainNoLeftDoor._1,
+          terrainNoLeftDoor._2,
           itv
         )
       )
@@ -172,6 +185,8 @@ object InitialLoad {
       flag: SpriteAndAnimations,
       terrainMap: TiledGridMap[TileType],
       terrain: Group,
+      terrainMapNoLeftDoor: TiledGridMap[TileType],
+      terrainNoLeftDoor: Group,
       itv: SpriteAndAnimations
   ): (LevelDataStore, List[Animation]) =
     (
@@ -185,7 +200,9 @@ object InitialLoad {
           .scaleBy(Constants.MagicNumbers.itvxScaleFactor, Constants.MagicNumbers.itvxScaleFactor),
         palm.sprite,
         terrainMap,
-        terrain
+        terrain,
+        terrainMapNoLeftDoor,
+        terrainNoLeftDoor
       ),
       List(waterReflections.animations, flag.animations, helm.animations, palm.animations, itv.animations)
     )
@@ -232,7 +249,9 @@ final case class LevelDataStore(
     itv: Sprite[Material.Bitmap],
     palm: Sprite[Material.Bitmap],
     terrainMap: TiledGridMap[TileType],
-    terrain: Group
+    terrain: Group,
+    terrainMapNoLeftDoor: TiledGridMap[TileType],
+    terrainNoLeftDoor: Group
 ) {
   val backTallPalm: Sprite[Material.Bitmap] =
     palm

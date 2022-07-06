@@ -65,9 +65,15 @@ object LevelModel {
       currentScreen: Screen,
       dave: PlayerCharacter,
       characters: Map[Screen, List[ItvCharacter]],
-      platform: Platform
+      platformNormal: Platform,
+      platformNoLeftDoor: Platform
   ) extends LevelModel {
-    val notReady: Boolean                     = false
+    def platform: Platform = currentScreen match
+      case Screen.Start => platformNoLeftDoor
+      case _            => platformNormal
+
+    val notReady: Boolean = false
+
     def currentCharacters: List[ItvCharacter] = characters.getOrElse(currentScreen, Nil)
 
     def update(gameTime: GameTime, inputState: InputState): Outcome[Ready] = {
