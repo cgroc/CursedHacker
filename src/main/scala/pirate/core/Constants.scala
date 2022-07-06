@@ -22,9 +22,10 @@ object Constants {
     case Anne   extends CharacterName
     case Luke   extends CharacterName
     case Ali    extends CharacterName
-    case James   extends CharacterName
-    case Bella   extends CharacterName
-    case Tobias   extends CharacterName
+    case James  extends CharacterName
+    case Bella  extends CharacterName
+    case Tobias extends CharacterName
+    case Chloe  extends CharacterName
 
   object Debug {
     // Do you want a red box highlighting the bounding box of each character
