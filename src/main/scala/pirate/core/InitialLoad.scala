@@ -38,6 +38,7 @@ object InitialLoad {
         maya     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.mayaRef, Depth(2))
         pere     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.pereRef, Depth(2))
         shah     <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.shahRef, Depth(2))
+        lee      <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.leeRef, Depth(2))
         dan      <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.danRef, Depth(2))
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
       } yield makeStartupData(
@@ -47,6 +48,7 @@ object InitialLoad {
           Constants.CharacterName.Maya   -> maya,
           Constants.CharacterName.Shah   -> shah,
           Constants.CharacterName.Pere   -> pere,
+          Constants.CharacterName.Lee    -> lee
           Constants.CharacterName.Dan    -> dan
         ),
         maybeLds

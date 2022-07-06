@@ -8,6 +8,7 @@ object Quotes {
     CharacterName.Shah   -> "Fine! I wont call people cowboys in public channels again!",
     CharacterName.Pere   -> "Not Elm, please...",
     CharacterName.Maya   -> "Which service can I kill next?",
+    CharacterName.Lee    -> "My happiness is directly proportional to my Intellij time",
     CharacterName.Dan    -> "Dave, if I hear you mention\n the principle of least power one more time..."
   )
   def get(characterName: CharacterName): String =
