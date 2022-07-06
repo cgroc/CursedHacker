@@ -199,11 +199,12 @@ object InitialLoad {
           ),
           levelDataStore = levelDataStore.map(_._1),
           screenData = {
-            case LevelModel.Screen.Zero  => ScreenData(Material.Bitmap(Assets.Static.backgroundRef))
+            case LevelModel.Screen.Start => ScreenData(Material.Bitmap(Assets.Static.backgroundRef))
             case LevelModel.Screen.One   => ScreenData(Material.Bitmap(Assets.Static.background2Ref))
             case LevelModel.Screen.Two   => ScreenData(Material.Bitmap(Assets.Static.background3Ref))
             case LevelModel.Screen.Three => ScreenData(Material.Bitmap(Assets.Static.background4Ref))
             case LevelModel.Screen.Four  => ScreenData(Material.Bitmap(Assets.Static.background5Ref))
+            case LevelModel.Screen.End   => ScreenData(Material.Bitmap(Assets.Static.finalBackgroundRef))
           }
         )
       )
