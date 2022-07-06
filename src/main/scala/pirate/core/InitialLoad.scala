@@ -52,6 +52,7 @@ object InitialLoad {
         james    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.jamesRef, Depth(2))
         tobias   <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.tobiasRef, Depth(2))
         chloe    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.chloeRef, Depth(2))
+        chris    <- loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.chrisRef, Depth(2))
         maybeLds <- levelDataStore(screenDimensions, assetCollection, dice)
       } yield makeStartupData(
         {
@@ -74,6 +75,7 @@ object InitialLoad {
           case Constants.CharacterName.James  => james
           case Constants.CharacterName.Tobias => tobias
           case Constants.CharacterName.Chloe  => chloe
+          case Constants.CharacterName.Chris  => chris
         },
         maybeLds
       )) match {
