@@ -17,5 +17,6 @@ object Quotes {
     case CharacterName.Becky  => "Dave is this legit weird\n or just how ITV does things…"
     case CharacterName.Rob    => "Who do I talk to about..."
     case CharacterName.Anne   => "FNORD!!!"
+    case CharacterName.Luke   => "Dave, I'm hoping to save\n The WORLD!! Can I buy another\n few days hols?"
   }
 }
