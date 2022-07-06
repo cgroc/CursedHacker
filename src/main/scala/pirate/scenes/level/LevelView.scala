@@ -150,7 +150,7 @@ object LevelView {
                 1,
                 Assets.Fonts.fontKey,
                 Assets.Fonts.fontMaterial
-              ).alignCenter
+              ).alignCenter.scaleBy(0.7, 0.7)
             )
           else Layer.empty
         )

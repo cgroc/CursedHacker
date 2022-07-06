@@ -60,7 +60,10 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
                   otherItvCharacter(CharacterName.Becky, Vertex(10, 0)),
                   otherItvCharacter(CharacterName.Rob, Vertex(14, 0))
                 ),
-                Screen.One -> List(otherItvCharacter(CharacterName.Maya, Vertex(10, 0))),
+                Screen.One -> List(
+                  otherItvCharacter(CharacterName.Maya, Vertex(10, 0)),
+                  otherItvCharacter(CharacterName.Anne, Vertex(5, 0))
+                ),
                 Screen.Two -> List(otherItvCharacter(CharacterName.Shah, Vertex(8, 0))),
                 Screen.Three -> List(
                   otherItvCharacter(CharacterName.Pere, Vertex(10, 0)),
