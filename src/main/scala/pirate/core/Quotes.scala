@@ -24,6 +24,7 @@ object Quotes {
     case CharacterName.Tobias  => "It's OK that you're\nwrong about whitespace <3"
     case CharacterName.Chloe   => "Scala isn't as bad as I thought!"
     case CharacterName.Chris   => "I still don't get it.."
+    case CharacterName.Adam    => ":|"
     case CharacterName.Waltons => "Check the logs!"
   }
 }

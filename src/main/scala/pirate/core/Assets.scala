@@ -126,6 +126,7 @@ object Assets {
     val tobiasRef: AssetName  = AssetName("bouncytobias")
     val chloeRef: AssetName   = AssetName("bouncyChloe")
     val chrisRef: AssetName   = AssetName("bouncyChris")
+    val adamRef: AssetName    = AssetName("bouncyAdam")
     val waltonsRef: AssetName = AssetName("bouncyWaltons")
 
     def assets(baseUrl: String): Set[AssetType] =
@@ -150,6 +151,7 @@ object Assets {
         AssetType.Image(Captain.tobiasRef, AssetPath(baseUrl + "assets/" + Captain.tobiasRef + ".png")),
         AssetType.Image(Captain.chloeRef, AssetPath(baseUrl + "assets/" + Captain.chloeRef + ".png")),
         AssetType.Image(Captain.chrisRef, AssetPath(baseUrl + "assets/" + Captain.chrisRef + ".png")),
+        AssetType.Image(Captain.adamRef, AssetPath(baseUrl + "assets/" + Captain.adamRef + ".png")),
         AssetType.Image(Captain.waltonsRef, AssetPath(baseUrl + "assets/" + Captain.waltonsRef + ".png")),
         AssetType.Text(Captain.jsonRef, AssetPath(baseUrl + "assets/" + Captain.ref + ".json"))
       )
