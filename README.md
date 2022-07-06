@@ -5,6 +5,8 @@ The ITV crew having fun with [Indigo](https://indigoengine.io/) in loving (and l
 ![image description](assets/bye.png)
 
 
+Play the game [here](http://grokemon.co.uk/)
+
 Running the demo:
 
 ```scala
